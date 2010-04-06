@@ -6,16 +6,16 @@ jQuery(function(){
         	name: function() {
 			return this.firstName + " " + this.lastName;
 		},
-    	firstName: "John",
+        	firstName: "John",
 		lastName: "Resig",
         	url: "http://ejohn.org/",
 		cityJoin: function() {
 			return this.cities.join(", ");
 		},
-    	cities: [
-            	"Boston, MA",
-            	"San Francisco, CA"
-    	]
+        	cities: [
+                	"Boston, MA",
+                	"San Francisco, CA"
+        	]
 	};
 	
 	var arrayOfDataObjects = [ dataObject, dataObject, dataObject ];

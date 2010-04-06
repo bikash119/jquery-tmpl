@@ -1,0 +1,48 @@
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../jquery.tmpl.js"></script>
+<script src="../plugins/tmpl.extend.js"></script>
+<script src="../plugins/tmpl.blocks.js"></script>
+
+<script id='tmpl1' type="text/html">
+    <p>
+        <a href="${url}">${name}</a> has been to these cities.
+    </p>
+    {{block hello}}
+        <p>this is the default content!</p>
+    {{/block}}
+</script>
+
+<script id="tmpl2" type="text/html">
+{{extend tmpl1}}
+<ul>
+{{each(i,city) cities}}
+    <li> ${$i}) City: ${city}</li>
+{{/each}}
+</ul>
+{{block hello}}
+    <p>This is the custom content</p>
+    <p>I have been to one of these cities</p>
+{{/block}}
+</script>
+
+<script>
+jQuery(function(){
+	var dataObject = {
+        name: function() {
+			return this.firstName + " " + this.lastName;
+		},
+        firstName: "John",
+		lastName: "Resig",
+        url: "http://ejohn.org/",
+    	cities: [
+        	"Boston, MA",
+        	"San Francisco, CA"
+    	]
+	};
+	
+	jQuery('#tmpl2').render( dataObject ).appendTo("div");
+
+});
+</script>
+
+<div></div>
