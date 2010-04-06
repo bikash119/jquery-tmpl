@@ -4,21 +4,26 @@
 <script src="../plugins/tmpl.blocks.js"></script>
 
 <script id='tmpl1' type="text/html">
+    <h2>
+    {{block title}}
+    This is the default Title
+    {{/block}}
+    </h2>
     <p>
         <a href="${url}">${name}</a> has been to these cities.
     </p>
     {{block hello}}
         <p>this is the default content!</p>
     {{/block}}
+    <ul>
+    {{each(i,city) cities}}
+        <li> ${$i}) City: ${city}</li>
+    {{/each}}
+    </ul>
 </script>
 
 <script id="tmpl2" type="text/html">
 {{extend tmpl1}}
-<ul>
-{{each(i,city) cities}}
-    <li> ${$i}) City: ${city}</li>
-{{/each}}
-</ul>
 {{block hello}}
     <p>This is the custom content</p>
     <p>I have been to one of these cities</p>
@@ -38,7 +43,7 @@ jQuery(function(){
         	"Boston, MA",
         	"San Francisco, CA"
     	]
-	};
+    };
 	
 	jQuery('#tmpl2').render( dataObject ).appendTo("div");
 
