@@ -13,7 +13,13 @@
     ${ _(lastName).link(url) }
     </h2>
     <h2>
-    ${ _.link(lastName, url) }
+    ${ link(lastName, url) }
+    </h2>
+    <h2>
+    ${ defined("hello") }
+    </h2>
+    <h2>
+    ${ defined("cities") }
     </h2>
 </script>
 
@@ -48,6 +54,9 @@ jQuery(function(){
     $.tmpl.filters.extend({
         link: function(name, url){
             return '<a href="'+url+'">'+name+'</a>';
+        },
+        defined: function(name){
+            return (name in this.data);
         }
     });
 	

@@ -77,10 +77,10 @@
 			// generator (and which will be cached).
             
             var fn,
-                fnstring = "var $=jQuery,T=[],_=$.tmpl.filters;T.data=$data;T.index=$i;" +
+                fnstring = "var $=jQuery,T=[],_=$.tmpl.filters;_.data=T.data=$data;T.index=$i;" +
 
                 // Introduce the data as local variables using with(){}
-                "\nwith($data){\n\tT.push('" +
+                "with(_)\nwith($data){\n\tT.push('" +
 
                 // Convert the template into pure JavaScript
                 str 
@@ -102,7 +102,9 @@
                             
                         return result;
                     })
-                + "');\n}\nreturn $(T.join('')).get();";
+                + "');\n}\
+                _.data = {};\
+                \nreturn $(T.join('')).get();";
             
             if (jQuery.tmpl.debug)
                 console.debug(fnstring);
