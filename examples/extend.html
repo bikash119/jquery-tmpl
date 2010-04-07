@@ -9,17 +9,28 @@
 </script>
 
 <script id="tmpl2" type="text/html">
-{{extend tmpl1}}
+{{extend #tmpl1}}
 <ul>
-{{each(i,city) cities}}
+    {{each(i,city) cities}}
     <li> ${$i}) City: ${city}</li>
-{{/each}}
+    {{/each}}
 </ul>
 </script>
 
+<script src="base.js" type='text/html'></script>
+<script id="tmpl3" type="text/html">
+{{extend templates/base.html}}
+<ul>
+    {{each(i,city) cities}}
+    <li> ${$i}) City: ${city}</li>
+    {{/each}}
+</ul>
+</script>
+
+
 <script>
 jQuery(function(){
-	var dataObject = {
+	var data = {
         name: function() {
 			return this.firstName + " " + this.lastName;
 		},
@@ -35,7 +46,8 @@ jQuery(function(){
     	]
 	};
 	
-	jQuery('#tmpl2').render( dataObject ).appendTo("div");
+	jQuery('#tmpl2').render( data ).appendTo("div");
+    jQuery('#tmpl3').render( data ).appendTo("div");
 
 });
 </script>

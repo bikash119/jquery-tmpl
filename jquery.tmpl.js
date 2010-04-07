@@ -6,7 +6,12 @@
  */
 (function(jQuery){
 	// Override the DOM manipulation function
-	var oldManip = jQuery.fn.domManip;
+	var oldManip = jQuery.fn.domManip,
+        console = ('console' in window)?window.console: {
+            debug: function(){},
+            info: function(){},
+            error: function(){}
+        };
 	
 	jQuery.fn.extend({
 		render: function( data ) {
@@ -33,12 +38,12 @@
 	
 	jQuery.extend({
 		render: function( tmpl, data ) {
-			var fn;
+            var fn;
+            $.extend(data, jQuery.tmpl.filters);
 			
 			// Use a pre-defined template, if available
 			if ( jQuery.templates[ tmpl ] ) {
 				fn = jQuery.templates[ tmpl ];
-				
 			// We're pulling from a script node
 			} else if ( tmpl.nodeType ) {
 				var node = tmpl, elemData = jQuery.data( node );
@@ -64,34 +69,6 @@
 		// You can stick pre-built template functions here
 		templates: {},
 
-		/*
-		 * For example, someone could do:
-		 *   jQuery.templates.foo = jQuery.tmpl("some long templating string");
-		 *   $("#test").append("foo", data);
-		 */
-
-		tmplcmd: {
-			each: {
-				_default: [ null, "$i" ],
-				prefix: "jQuery.each($1,function($2){with(this){",
-				suffix: "}});"
-			},
-			'if': {
-				prefix: "if($1){",
-				suffix: "}"
-			},
-			'else': {
-				prefix: "}else{"
-			},
-			html: {
-				prefix: "_.push(typeof $1==='function'?$1.call(this):$1);"
-			},
-			"=": {
-				_default: [ "this" ],
-				prefix: "_.push($.encode(typeof $1==='function'?$1.call(this):$1));"
-			}
-		},
-
 		encode: function( text ) {
 			return text != null ? document.createTextNode( text.toString() ).nodeValue : "";
 		},
@@ -99,33 +76,86 @@
 		tmpl: function(str, data, i) {
 			// Generate a reusable function that will serve as a template
 			// generator (and which will be cached).
-			var fn = new Function("jQuery","$data","$i",
-				"var $=jQuery,_=[];_.data=$data;_.index=$i;" +
+            
+            var fn,
+                fnstring = "var $=jQuery,_=[];_.data=$data;_.index=$i;" +
 
-				// Introduce the data as local variables using with(){}
-				"with($data){_.push('" +
+                // Introduce the data as local variables using with(){}
+                "\nwith($data){\n\t_.push('" +
 
-				// Convert the template into pure JavaScript
-				str
-					.replace(/[\r\t\n]/g, " ")
-					.replace(/\${([^}]*)}/g, "{{= $1}}")
-					.replace(/{{(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?}}/g, function(all, slash, type, fnargs, args) {
-						var tmpl = jQuery.tmplcmd[ type ];
+                // Convert the template into pure JavaScript
+                str .replace(/([^\\])'/g,"$1\\'")
+                    .replace(/[\r\t\n]/g, " ")
+                    .replace(/\${([^}]*)}/g, "{{= $1}}")
+                    .replace(/([^\\])?'/g,"$1\\'")//escape ' to \'
+                    .replace(/{{(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?}}/g, function(all, slash, type, fnargs, args) {
+                        var tmpl = jQuery.tmpl.tags[ type ];
+                        
+                        if ( !tmpl ) {
+                            throw "Template not found: " + type;
+                        }
 
-						if ( !tmpl ) {
-							throw "Template not found: " + type;
-						}
+                        var def = tmpl._default;
 
-						var def = tmpl._default;
+                        var result = "');" + tmpl[slash ? "suffix" : "prefix"]
+                            .split("$1").join(args || def[0])
+                            .split("$2").join(fnargs || def[1]) + "\n\t_.push('";
+                            
+                        return result;
+                    })
+                + "');\n}\nreturn $(_.join('')).get();";
+            
+            console.debug(fnstring);
+            
+            
+            try{    
+                fn = new Function("jQuery","$data","$i",fnstring );
+            }catch(e){
+                //a little help debugging;
+                console.error(e);
+                console.info(fnstring);
+                fn = new Function("jQuery","$data","$i", 'return "";' );
+            }
 
-						return "');" + tmpl[slash ? "suffix" : "prefix"]
-							.split("$1").join(args || def[0])
-							.split("$2").join(fnargs || def[1]) + "_.push('";
-					})
-				+ "');}return $(_.join('')).get();");
-
-			// Provide some basic currying to the user
+            
+            // Provide some basic currying to the user
 			return data ? fn.call( this, jQuery, data, i ) : fn;
 		}
 	});
+    
+    jQuery.extend(jQuery.tmpl,{
+        tags:{
+            /*
+             * For example, someone could do:
+             *   jQuery.templates.foo = jQuery.tmpl("some long templating string");
+             *   $("#test").append("foo", data);
+             */
+            each: {
+                _default: [ null, "$i" ],
+                prefix: "\n\tjQuery.each($1,function($2){\n\t\twith(this){\n",
+                suffix: "\n}});"
+            },
+            'if': {
+                prefix: "if($1){",
+                suffix: "}"
+            },
+            'else': {
+                prefix: "}else{"
+            },
+            html: {
+                prefix: "\n_.push(typeof $1==='function'?$1.call(this):$1);"
+            },
+            "=": {
+                _default: [ "this" ],
+                prefix: "\n\t_.push($.encode(typeof $1==='function'?$1.call(this):$1));"
+            }
+        },
+        filters : {
+            //default filters
+            join: function(){
+               return Array.prototype.join.call(arguments[0], arguments[1]);
+            }
+        }
+    });
+    
 })(jQuery);

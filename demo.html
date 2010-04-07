@@ -23,22 +23,28 @@ jQuery(function(){
 	var tmpl = '<li>${$i}) <a href="${url}">${name}</a> (${cityJoin})</li>';
 
 	$("#sometmpl")
-        	.render( dataObject ) // Returns a LI with all the data filled in
-        	.appendTo("ul");
+    	.render( dataObject ) // Returns a LI with all the data filled in
+    	.appendTo("ul");
 
 	$("#sometmpl")
-        	.render( arrayOfDataObjects ) // Returns multiple LIs with data filled in
-        	.appendTo("ul");
+    	.render( arrayOfDataObjects ) // Returns multiple LIs with data filled in
+    	.appendTo("ul");
 
 	$("#sometmpl2")
-        	.render( arrayOfDataObjects ) // Returns multiple LIs with data filled in
-        	.appendTo("ul");
+    	.render( arrayOfDataObjects ) // Returns multiple LIs with data filled in
+    	.appendTo("ul");
+            
 	
 	// Appends one LI, filled with data, into the UL
 	$("ul").append( tmpl, dataObject );
 
 	// Appends multiple LI, filled with data, into the UL
 	$("ul").append( tmpl, arrayOfDataObjects );
+    
+    
+    $("#sometmpl3")
+        .render( dataObject ) // Returns a LI with all the data filled in
+        .appendTo("ul");
 });
 </script>
 
@@ -48,6 +54,10 @@ jQuery(function(){
 
 <script id="sometmpl2" type="text/html">
 	<li>${$i}) <a href="${url}">${name}</a> Cities: {{each(i,city) cities}}${city}{{/each}}</li>
+</script>
+
+<script id="sometmpl3" type="text/html">
+    <li>Cities: ${join(cities,"-")}</li>
 </script>
 
 <ul></ul>
