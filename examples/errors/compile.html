@@ -1,0 +1,29 @@
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../../jquery.tmpl.js"></script>
+
+
+<script id='compile-error' type="text/html">
+    <p>
+        ${woej wjeog}
+        <a href="${url}">${name}</a> has been to these cities.
+    </p>
+</script>
+
+<script>
+jQuery(function(){
+    var data = {
+        name: function() {
+            return this.firstName + " " + this.lastName;
+        },
+        firstName: "John",
+        lastName: "Resig",
+        url: "http://ejohn.org/"
+    };
+    
+    jQuery('#compile-error').render( data ).appendTo("div");
+
+});
+</script>
+
+<div></div>
+

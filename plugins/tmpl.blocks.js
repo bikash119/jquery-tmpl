@@ -5,30 +5,30 @@
 
     var block_scope = [];
 
-    jQuery.extend(jQuery.tmplcmd,{
+    jQuery.extend(jQuery.tmpl.tags,{
 
         block: {
     
             _default: [ null, null ],
-            prefix: "\
-                $.templates.blocks = $.templates.blocks||{};\
-                if(!$.templates.blocks['$1']){\
-                    _.push('<!--block-$1--><!--endblock-$1-->');\
-                    $.templates.blocks['$1'] = true;\
-                }\
-                for(var b=0;b<_.length;b++){\
-                    if(_[b].match('<!--block-$1-->')){\
-                        var r = /<\!--block-$1-->.*<\!--endblock-$1-->/;\
-                        _[b] = _[b].replace(r, (function(){\
-                            var _ = ['<!--block-$1-->'],\
-                                end = '<!--endblock-$1-->';",
-            suffix:"\
-                            _.push(end);\
-                            return _.join(' ');\
-                        })());\
-                        break;\
-                    };\
-                }"
+            prefix: "\n\
+    $.templates.blocks = $.templates.blocks||{};\n\
+    if(!$.templates.blocks['$1']){\n\
+        T.push('<!--block-$1--><!--endblock-$1-->');\n\
+        $.templates.blocks['$1'] = true;\n\
+    }\n\
+    for(var b=0;b<_.length;b++){\n\
+        if(T[b].match('<!--block-$1-->')){\n\
+            var r = /<\!--block-$1-->.*<\!--endblock-$1-->/;\n\
+            T[b] = T[b].replace(r, (function(){\n\
+                var T = ['<!--block-$1-->'],\n\
+                    end = '<!--endblock-$1-->';",
+            suffix:"\n\
+                T.push(end);\n\
+                return T.join(' ');\n\
+            })());\n\
+            break;\n\
+        };\n\
+    }"
         }
         
     });

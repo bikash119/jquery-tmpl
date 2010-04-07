@@ -1,0 +1,59 @@
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../jquery.tmpl.js"></script>
+<script src="../plugins/tmpl.filters.js"></script>
+
+<script id='tmpl-filters' type="text/html">
+    <h2>
+    ${ _(cities).join("|") }
+    </h2>
+    <h2>
+    ${ _(cities).up().join("-") }
+    </h2>
+    <h2>
+    ${ _(lastName).link(url) }
+    </h2>
+    <h2>
+    ${ _.link(lastName, url) }
+    </h2>
+</script>
+
+<script>
+jQuery(function(){
+    var $ = jQuery,
+	   dataObject = {
+            name: function() {
+    			return this.firstName + " " + this.lastName;
+    		},
+            firstName: "John",
+    		lastName: "Resig",
+            url: "http://ejohn.org/",
+        	cities: [
+            	"Boston, MA",
+            	"San Francisco, CA"
+        	]
+        };
+    
+    $.tmpl.filters.fn.extend({
+        join: function(seperator){
+            return Array.prototype.join.apply(this,[seperator]);
+        },
+        up: function(seperator){
+            return this.map(function(){return (this+'').toUpperCase();});
+        },
+        link: function(url){
+            return '<a href="'+url+'">'+this.join(' ')+'</a>';
+        }
+    });
+    
+    $.tmpl.filters.extend({
+        link: function(name, url){
+            return '<a href="'+url+'">'+name+'</a>';
+        }
+    });
+	
+	jQuery('#tmpl-filters').render( dataObject ).appendTo("div");
+
+});
+</script>
+
+<div></div>

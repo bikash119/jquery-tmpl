@@ -1,0 +1,36 @@
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../../jquery.tmpl.js"></script>
+
+
+<script id='tag-not-found' type="text/html">
+    <p>
+        {{oops}}
+        <a href="${url}">${name}</a> has been to these cities.
+    </p>
+</script>
+
+<script>
+jQuery(function(){
+    var data = {
+        name: function() {
+            return this.firstName + " " + this.lastName;
+        },
+        firstName: "John",
+        lastName: "Resig",
+        url: "http://ejohn.org/",
+        cityJoin: function() {
+            return this.cities.join(", ");
+        },
+        cities: [
+                "Boston, MA",
+                "San Francisco, CA"
+        ]
+    };
+    
+    jQuery('#tag-not-found').render( data ).appendTo("div");
+
+});
+</script>
+
+<div></div>
+

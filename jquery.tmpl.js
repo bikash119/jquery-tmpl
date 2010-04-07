@@ -39,14 +39,13 @@
 	jQuery.extend({
 		render: function( tmpl, data ) {
             var fn;
-            $.extend(data, jQuery.tmpl.filters);
 			
 			// Use a pre-defined template, if available
 			if ( jQuery.templates[ tmpl ] ) {
 				fn = jQuery.templates[ tmpl ];
 			// We're pulling from a script node
 			} else if ( tmpl.nodeType ) {
-				var node = tmpl, elemData = jQuery.data( node );
+				var node = tmpl, elemData = jQuery.data( node )||{};
 				fn = elemData.tmpl || jQuery.tmpl( node.innerHTML );
 			}
 
@@ -78,13 +77,13 @@
 			// generator (and which will be cached).
             
             var fn,
-                fnstring = "var $=jQuery,_=[];_.data=$data;_.index=$i;" +
+                fnstring = "var $=jQuery,T=[],_=$.tmpl.filters;T.data=$data;T.index=$i;" +
 
                 // Introduce the data as local variables using with(){}
-                "\nwith($data){\n\t_.push('" +
+                "\nwith($data){\n\tT.push('" +
 
                 // Convert the template into pure JavaScript
-                str .replace(/([^\\])'/g,"$1\\'")
+                str 
                     .replace(/[\r\t\n]/g, " ")
                     .replace(/\${([^}]*)}/g, "{{= $1}}")
                     .replace(/([^\\])?'/g,"$1\\'")//escape ' to \'
@@ -99,22 +98,22 @@
 
                         var result = "');" + tmpl[slash ? "suffix" : "prefix"]
                             .split("$1").join(args || def[0])
-                            .split("$2").join(fnargs || def[1]) + "\n\t_.push('";
+                            .split("$2").join(fnargs || def[1]) + "\n\tT.push('";
                             
                         return result;
                     })
-                + "');\n}\nreturn $(_.join('')).get();";
+                + "');\n}\nreturn $(T.join('')).get();";
             
-            console.debug(fnstring);
-            
+            if (jQuery.tmpl.debug)
+                console.debug(fnstring);
             
             try{    
                 fn = new Function("jQuery","$data","$i",fnstring );
             }catch(e){
                 //a little help debugging;
-                console.error(e);
-                console.info(fnstring);
-                fn = new Function("jQuery","$data","$i", 'return "";' );
+                //console.error(e);
+                console.warn(fnstring);
+                throw(e);
             }
 
             
@@ -124,6 +123,7 @@
 	});
     
     jQuery.extend(jQuery.tmpl,{
+        debug: false,
         tags:{
             /*
              * For example, someone could do:
@@ -143,11 +143,11 @@
                 prefix: "}else{"
             },
             html: {
-                prefix: "\n_.push(typeof $1==='function'?$1.call(this):$1);"
+                prefix: "\nT.push(typeof $1==='function'?$1.call(this):$1);"
             },
             "=": {
                 _default: [ "this" ],
-                prefix: "\n\t_.push($.encode(typeof $1==='function'?$1.call(this):$1));"
+                prefix: "\n\tT.push($.encode(typeof $1==='function'?$1.call(this):$1));"
             }
         },
         filters : {

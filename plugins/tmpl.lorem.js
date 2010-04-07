@@ -174,14 +174,14 @@
     
     
     //template tags    
-    jQuery.extend(jQuery.tmplcmd, {
+    jQuery.extend(jQuery.tmpl.tags, {
         
         /**
          * {{words(n)}}
          */
         words:  {
             _default: [ null, null ],
-            prefix: "_.push( $.words($2) );"
+            prefix: "T.push( $.words($2) );"
         },
         
         /**
@@ -189,7 +189,7 @@
          */
         title:  {
             _default: [ null, null ],
-            prefix: "_.push( $.title($2) );"
+            prefix: "T.push( $.title($2) );"
         },
         
         /**
@@ -197,7 +197,7 @@
          */
         sentence:  {
             _default: [ null, null ],
-            prefix: "_.push( $.sentence($2) );"
+            prefix: "T.push( $.sentence($2) );"
         },
         
         /**
@@ -205,7 +205,7 @@
          */
         paragraph:  {
             _default: [ null, null ],
-            prefix: "_.push( $.paragraph($2) );"
+            prefix: "T.push( $.paragraph($2) );"
         },
         
         /**
@@ -213,7 +213,7 @@
          */
         paragraphs:  {
             _default: [ null, null ],
-            prefix: "_.push( $.paragraphs($2) );"
+            prefix: "T.push( $.paragraphs($2) );"
         }
         
         
