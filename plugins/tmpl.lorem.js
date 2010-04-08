@@ -41,7 +41,7 @@
             }else {
                 word_list = word_list.slice(0, count);
             }
-            return word_list.join(' ');
+            return word_list;
         },
         
         /**
@@ -51,7 +51,7 @@
          */
         title: function(count, common){
             var title = [], words = $.words(count, common);
-            $.each(words.split(' '), function(pos, word){
+            $.each(words, function(pos, word){
                 title.push(word.charAt(0).toUpperCase() + word.slice(1));
             });
             return title.join(' ');
@@ -68,7 +68,7 @@
             // words in each section for this sentence.
             common = !!common ? true : false;
             var sections = [], range = randomNumber(8, 15);
-            sections = $.words(range, common).split(' ');
+            sections = $.words(range, common);
             for (var i = 0; i < sections.length - 1; i++) {
                 if (Math.random() < 0.15) {
                     sections[i] += ',';
@@ -181,7 +181,8 @@
          */
         words:  {
             _default: [ null, null ],
-            prefix: "T.push( $.words($2) );"
+            prefix: "\n\
+        T.push( $.words($2) );"
         },
         
         /**
@@ -189,7 +190,8 @@
          */
         title:  {
             _default: [ null, null ],
-            prefix: "T.push( $.title($2) );"
+            prefix: "\n\
+        T.push( $.title($2) );"
         },
         
         /**
@@ -197,7 +199,8 @@
          */
         sentence:  {
             _default: [ null, null ],
-            prefix: "T.push( $.sentence($2) );"
+            prefix: "\n\
+        T.push( $.sentence($2) );"
         },
         
         /**
@@ -205,7 +208,8 @@
          */
         paragraph:  {
             _default: [ null, null ],
-            prefix: "T.push( $.paragraph($2) );"
+            prefix: "\n\
+        T.push( $.paragraph($2) );"
         },
         
         /**
@@ -213,7 +217,8 @@
          */
         paragraphs:  {
             _default: [ null, null ],
-            prefix: "T.push( $.paragraphs($2) );"
+            prefix: "\n\
+        T.push( $.paragraphs($2) );"
         }
         
         

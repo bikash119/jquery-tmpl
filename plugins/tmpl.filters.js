@@ -46,8 +46,7 @@
             }); 
         };
         
-    //$.collection is a valid collection itself
-    var $collection = $.collection = getConstructor();
+    var $collection = getConstructor();
     
     $.extend( $collection, {
         extend: $.extend,
@@ -102,8 +101,6 @@
         extend:     $collection.extend,
         include:    $collection.include,
         
-        // IMPORTANT: this is the main function to rewrite for each 
-        // collection.
         init:function( els ){
             // init should always call setArray with the array of 
             // parsed items, to keep jQuery's array structure.
@@ -159,6 +156,7 @@
             return this;
         }
     });
+    
     //all these methods can be used in the collections, and are exactly (and literally) like in jQuery.
     $collection.fn.include( $.fn, 'each,extend,index,get,size,eq,slice,map,andSelf' );
     

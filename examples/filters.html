@@ -31,16 +31,28 @@
         ${ isPlainObject(thing) }
         </li>
         <li>
-           |trim("  abc \n")| ->
-        |${ trim("  abc \n") }|
+           trim("  abc \n") ->
+        ${ trim("  abc \n") }
         </li>
         <li>
            inArray("San Francisco, CA", cities) ->
         ${ inArray("San Francisco, CA", cities) }
         </li>
         <li>
+           each( cities, cityFormatter ) -> 
+        ${ each( cities, cityFormatter ) } //hmm bug here
+        </li>
+        <li>
            merge( cities, morecities ) -> 
         ${ merge( cities, morecities ) } //hmm bug here
+        </li>
+        <li>
+           grep( cities, cityFilter )  -> 
+        ${  grep( cities, cityFilter ) }
+        </li>
+        <li>
+           map( morecities, cityMap )  -> 
+        ${  map( morecities, cityMap ) }
         </li>
     </ul>
     
@@ -76,6 +88,7 @@ jQuery(function(){
             name: function() {
     			return this.firstName + " " + this.lastName;
     		},
+            cityFilter:function(city){ return city.match('MA'); },
             firstName: "John",
     		lastName: "Resig",
             url: "http://ejohn.org/",
@@ -87,7 +100,17 @@ jQuery(function(){
                 "Denver, CO",
                 "Washington, DC"
             ],
-            thing:{}
+            thing:{},
+            cityMap:function(city){ 
+                switch(city.split(', ')[1]){
+                    case 'CO': return 'Colorado';
+                    case 'DC': return 'District of Columbia';
+                    default : return '???'
+                }
+            },
+            cityFormatter: function(i, city){
+                return i+") "+city.toUpperCase();
+            }
         };
     
     $.tmpl.filters.fn.extend({

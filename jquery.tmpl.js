@@ -77,35 +77,47 @@
 			// generator (and which will be cached).
             
             var fn,
-                fnstring = "var $=jQuery,T=[],_=$.tmpl.filters;_.data=T.data=$data;T.index=$i;" +
+                fnstring = "\n\
+    var $ = jQuery, \n\
+        T = [], \n\
+        _ = $.tmpl.filters; \n\
+    \n\
+    //make data available on tmpl.filters as object not part of global scope \n\
+    _.data = T.data = $data; \n\
+    T.index = $i; \n\
+    \n\
+    // Introduce the data as local variables using with(){} \n\
+    with(_)with($data){\n\
+        T.push('" +
 
-                // Introduce the data as local variables using with(){}
-                "with(_)\nwith($data){\n\tT.push('" +
+            // Convert the template into pure JavaScript
+            str 
+                .replace(/[\r\t\n]/g, " ")
+                .replace(/\${([^}]*)}/g, "{{= $1}}")
+                .replace(/([^\\])?'/g,"$1\\'")//escape ' to \'
+                .replace(/{{(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?}}/g, function(all, slash, type, fnargs, args) {
+                    var tmpl = jQuery.tmpl.tags[ type ];
+                    
+                    if ( !tmpl ) {
+                        throw "Template not found: " + type;
+                    }
 
-                // Convert the template into pure JavaScript
-                str 
-                    .replace(/[\r\t\n]/g, " ")
-                    .replace(/\${([^}]*)}/g, "{{= $1}}")
-                    .replace(/([^\\])?'/g,"$1\\'")//escape ' to \'
-                    .replace(/{{(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?}}/g, function(all, slash, type, fnargs, args) {
-                        var tmpl = jQuery.tmpl.tags[ type ];
+                    var def = tmpl._default;
+
+                    var result = "');" + tmpl[slash ? "suffix" : "prefix"]
+                        .split("$1").join(args || def[0])
+                        .split("$2").join(fnargs || def[1]) + 
+                        "\n        T.push('";
                         
-                        if ( !tmpl ) {
-                            throw "Template not found: " + type;
-                        }
-
-                        var def = tmpl._default;
-
-                        var result = "');" + tmpl[slash ? "suffix" : "prefix"]
-                            .split("$1").join(args || def[0])
-                            .split("$2").join(fnargs || def[1]) + "\n\tT.push('";
-                            
-                        return result;
-                    })
-                + "');\n}\
-                _.data = null;\
-                \nreturn $(T.join('')).get();";
+                    return result;
+                })
+    + "');\n\
+    }\n\
+    //reset the tmpl.filter data object \n\
+    _.data = null;\n\
+    return $(T.join('')).get();";
             
+            //provide some feedback if they are in tmpl.debug mode
             if (jQuery.tmpl.debug)
                 console.debug(fnstring);
             
@@ -149,7 +161,7 @@
             },
             "=": {
                 _default: [ "this" ],
-                prefix: "\n\tT.push($.encode(typeof $1==='function'?$1.call(this):$1));"
+                prefix: "\n\t\tT.push($.encode(typeof $1==='function'?$1.call(this):$1));"
             }
         },
         filters : {
