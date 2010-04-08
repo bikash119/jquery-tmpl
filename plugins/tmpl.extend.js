@@ -32,7 +32,7 @@ jQuery.extend(jQuery.tmpl.tags,{
     }\n\
     /*finally render using outer-html hack*/\n\
     T.push($('<p/>').append( $.render('$1', $data) ).html());\n\
-            "
+    "
     }
 });
 

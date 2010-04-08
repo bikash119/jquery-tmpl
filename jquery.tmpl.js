@@ -103,7 +103,7 @@
                         return result;
                     })
                 + "');\n}\
-                _.data = {};\
+                _.data = null;\
                 \nreturn $(T.join('')).get();";
             
             if (jQuery.tmpl.debug)
