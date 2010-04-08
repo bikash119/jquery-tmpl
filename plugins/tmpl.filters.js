@@ -1,7 +1,28 @@
 /**
+ * jQuery.tmpl.filters Plugin
  * @author thatcher
+ * I just tweaked ariels collection implementation a bit and added
+ * the last ten lines or so.
  */
 (function( $ ){
+
+/**
+ * jQuery.Collection
+ * Copyright (c) 2008 Ariel Flesler - aflesler(at)gmail(dot)com
+ * Licensed under GPL license (http://www.opensource.org/licenses/gpl-license.php).
+ * Date: 1/28/2008
+ *
+ * @projectDescription Extensible and inheritable jQuery-like collections
+ * @author Ariel Flesler
+ * @version 1.0.3
+ *
+ * @id $.collection
+ * @param {  , Array } items Any amount of items for the collection, this is a generic (and the base) collection.
+ * @return { $.collection } Returns a generic $.collection object.
+ *
+ * @id $.collection.build
+ * @return {subclass of $.collection} Returns a subclass of it's caller ( $.collection in the first case ).
+ */
     var f = function(){},
         // get an instance of this constructor, without calling it
         emptyInstance = function( c ){
@@ -31,7 +52,9 @@
     $.extend( $collection, {
         extend: $.extend,
         fn:$collection.prototype,
-        statics:'extend,build,include,implement',
+        statics:'extend,isFunction,isArray,isPlainObject,'+
+        'isEmptyObject,error,each,trim,makeArray,inArray,merge,'+
+        'grep,map',
         // creates a new collection, that include this 
         // collections prototype
         build:function(){
@@ -40,7 +63,7 @@
             var constr = getConstructor();
             
             //copy the statics
-            this.include( constr, this, $collection.statics );
+            this.include( constr, jQuery, $collection.statics );
             //create inheritance.
             constr.prototype = constr.fn = emptyInstance(this);
             //we could lose it
@@ -71,18 +94,6 @@
                         source[func];
                 });
             return target;
-        },
-        // same as include, but when calling an implemented function, 
-        // it will map EACH matched element.
-        implement:function( source, methods ){
-            this.fn.include( source, methods, function( method ){
-                return function(){
-                    var args = arguments;
-                    return this.map(function(){
-                        return method.apply(this,args);
-                    });
-                };
-            });
         }
     });
     
@@ -152,19 +163,16 @@
     $collection.fn.include( $.fn, 'each,extend,index,get,size,eq,slice,map,andSelf' );
     
     //Basic template filter plugins or tQuery
+    var currentFilters = jQuery.tmpl.filters;
     jQuery.tmpl.filters = $collection.build();
     
     jQuery.tmpl.filters.fn.extend({
-        init: function(context){
-            if(!jQuery.isArray(context)){
-                context = [context];
-            }
-            return this.setArray(context);
-        },
         toString: function(){
             return this.join(' ');
         }
     });
+    
+    jQuery.tmpl.filters.extend(currentFilters);
     
             
 })( jQuery );

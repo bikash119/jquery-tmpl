@@ -4,22 +4,44 @@
 
 <script id='tmpl-filters' type="text/html">
     <h2>
-    ${ _(cities).join("|") }
-    </h2>
-    <h2>
-    ${ _(cities).up().join("-") }
-    </h2>
-    <h2>
-    ${ _(lastName).link(url) }
-    </h2>
-    <h2>
+       link(lastName, url) ->
     ${ link(lastName, url) }
     </h2>
     <h2>
+       defined("hello") ->
     ${ defined("hello") }
     </h2>
     <h2>
+       defined("cities") ->
     ${ defined("cities") }
+    </h2>
+    <h2>
+       isArray(cities) ->
+    ${ isArray(cities) }
+    </h2>
+    <h2>
+       isFunction(name) ->
+    ${ isFunction(name) }
+    </h2>
+    <h2>
+       isPlainObject(thing) ->
+    ${ isPlainObject(thing) }
+    </h2>
+    <h2>
+       _(cities).join(" | ") ->
+    ${ _(cities).join(" | ") }
+    </h2>
+    <h2>
+       _(cities).up().join(" - ") ->
+    ${ _(cities).up().join(" - ") }
+    </h2>
+    <h2>
+       _(firstName, lastName).up().join(" - ") ->
+    ${ _(firstName, lastName).up().join(" - ") }
+    </h2>
+    <h2>
+       _(lastName).link(url) ->
+    ${ _(lastName).link(url) }
     </h2>
 </script>
 
@@ -36,7 +58,8 @@ jQuery(function(){
         	cities: [
             	"Boston, MA",
             	"San Francisco, CA"
-        	]
+        	],
+            thing:{}
         };
     
     $.tmpl.filters.fn.extend({
