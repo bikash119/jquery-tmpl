@@ -38,7 +38,7 @@
 	
 	jQuery.extend({
 		render: function( tmpl, data ) {
-            var fn;
+            var fn, request;
 			
 			// Use a pre-defined template, if available
 			if ( jQuery.templates[ tmpl ] ) {
@@ -46,8 +46,47 @@
 			// We're pulling from a script node
 			} else if ( tmpl.nodeType ) {
 				var node = tmpl, elemData = jQuery.data( node )||{};
-				fn = elemData.tmpl || jQuery.tmpl( node.innerHTML );
-			}
+                //if script node is empty and has a src attribute honor it
+                if(node.src){
+                    //call re-call render with src url
+                    return jQuery.render( node.src, data, callback );
+                }else{
+                    fn = elemData.tmpl || jQuery.tmpl( node.innerHTML );
+                }
+            // passing object implies ajax fetch of remote template
+			} else if ( jQuery.isPlainObject( tmpl ) ){
+                // TODO: re-think but render as-is cant support async
+                // since it is expected to return the rendered template
+                // as a string - might be nice to have optional arg for
+                // callback of aynch template rendering. :DONE
+                var options = jQuery.extend( {}, tmpl, {
+                    // url is a required property of the passed options
+                    type: 'GET',
+                    dataType: 'text',
+                    success: function( text ){
+                        jQuery.templates[ tmpl.url ] = jQuery.tmpl( text );
+                        // if a rendering callback was provided, use it
+                        if( tmpl.success )
+                            tmpl.success( jQuery.render( tmpl.url, tmpl.templateData ) );
+                            
+                    },
+                    error: function( xhr, status, e ){
+                        jQuery.templates[ tmpl.url ] = jQuery.tmpl( 
+                            'Failed to load template from '+tmpl.url +
+                            '('+status+')'+e
+                        );
+                        // if a rendering callback was provided, use it
+                        if( tmpl.error )
+                            tmpl.error( jQuery.render( tmpl.url, tmpl.templateData ) );
+                    }
+                })
+                request = jQuery.ajax( options );
+                
+                // for non async renderings if they provide no success callback
+                // allow the rendered template to be returned
+                return ( tmpl.async === false ) && !tmpl.success ? 
+                    jQuery.render( tmpl.url, tmpl.templateData ) : request;
+            }
 
 			fn = fn || jQuery.tmpl( tmpl );
 			
@@ -161,7 +200,7 @@
             },
             "=": {
                 _default: [ "this" ],
-                prefix: "\n\t\tT.push($.encode(typeof $1==='function'?$1.call(this):$1));"
+                prefix: "\n\t\tT.push($.encode(typeof $1==='undefined'?'':typeof $1==='function'?$1.call(this):$1));"
             }
         },
         filters : {
