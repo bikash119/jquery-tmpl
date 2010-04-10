@@ -22,6 +22,8 @@ jQuery(function(){
 	
 	var tmpl = '<li>${$i}) <a href="${url}">${name}</a> (${cityJoin})</li>';
 
+    jQuery.tmpl.debug = true;
+    
 	$("#sometmpl1")
     	.render( dataObject ) // Returns a LI with all the data filled in
     	.appendTo("ul");
@@ -71,11 +73,16 @@ jQuery(function(){
 </script>
 
 <script id="sometmpl2" type="text/html">
+    {{comment}}
+       This comment is ignored by the templating engine.
+       so is the ${foo} following this
+    {{/comment}}
+    ${foo}
 	<li>${$i}) <a href="${url}">${name}</a> Cities: {{each(i,city) cities}}${city}{{/each}}</li>
 </script>
 
 <script id="sometmpl3" type="text/html">
-    <li>Cities: ${_.join(cities,"-")}</li>
+    <li>Cities: ${ join(cities,"-") }</li>
 </script>
 
 <script id="sometmpl4" src='examples/templates/remote.html' type="text/html"> </script>

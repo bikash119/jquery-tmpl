@@ -5,210 +5,285 @@
  * Dual licensed under the MIT or GPL Version 2 licenses.
  */
 (function(jQuery){
-	// Override the DOM manipulation function
-	var oldManip = jQuery.fn.domManip,
-        console = ('console' in window)?window.console: {
-            debug: function(){},
-            info: function(){},
-            error: function(){}
-        };
-	
-	jQuery.fn.extend({
-		render: function( data ) {
-			return this.map(function(i, tmpl){
-				return jQuery.render( tmpl, data );
-			});
-		},
-		
-		// This will allow us to do: .append( "template", dataObject )
-		domManip: function( args ) {
-			// This appears to be a bug in the appendTo, etc. implementation
-			// it should be doing .call() instead of .apply(). See #6227
-			if ( args.length > 1 && args[0].nodeType ) {
-				arguments[0] = [ jQuery.makeArray(args) ];
-			}
 
-			if ( args.length === 2 && typeof args[0] === "string" && typeof args[1] !== "string" ) {
-				arguments[0] = [ jQuery.render( args[0], args[1] ) ];
-			}
-			
-			return oldManip.apply( this, arguments );
+// Override the DOM manipulation function
+var oldManip = jQuery.fn.domManip,
+    console = ('console' in window)?window.console: {
+        debug: function(){},
+        info: function(){},
+        error: function(){}
+    };
+
+jQuery.fn.extend({
+	render: function( data ) {
+		return this.map(function(i, tmpl){
+			return jQuery.render( tmpl, data );
+		});
+	},
+	
+	// This will allow us to do: .append( "template", dataObject )
+	domManip: function( args ) {
+		// This appears to be a bug in the appendTo, etc. implementation
+		// it should be doing .call() instead of .apply(). See #6227
+		if ( args.length > 1 && args[0].nodeType ) {
+			arguments[0] = [ jQuery.makeArray(args) ];
 		}
-	});
-	
-	jQuery.extend({
-		render: function( tmpl, data ) {
-            var fn, request;
-			
-			// Use a pre-defined template, if available
-			if ( jQuery.templates[ tmpl ] ) {
-				fn = jQuery.templates[ tmpl ];
-			// We're pulling from a script node
-			} else if ( tmpl.nodeType ) {
-				var node = tmpl, elemData = jQuery.data( node )||{};
-                //if script node is empty and has a src attribute honor it
-                if(node.src){
-                    //call re-call render with src url
-                    return jQuery.render( node.src, data, callback );
-                }else{
-                    fn = elemData.tmpl || jQuery.tmpl( node.innerHTML );
-                }
-            // passing object implies ajax fetch of remote template
-			} else if ( jQuery.isPlainObject( tmpl ) ){
-                // TODO: re-think but render as-is cant support async
-                // since it is expected to return the rendered template
-                // as a string - might be nice to have optional arg for
-                // callback of aynch template rendering. :DONE
-                var options = jQuery.extend( {}, tmpl, {
-                    // url is a required property of the passed options
-                    type: 'GET',
-                    dataType: 'text',
-                    success: function( text ){
-                        jQuery.templates[ tmpl.url ] = jQuery.tmpl( text );
-                        // if a rendering callback was provided, use it
-                        if( tmpl.success )
-                            tmpl.success( jQuery.render( tmpl.url, tmpl.templateData ) );
-                            
-                    },
-                    error: function( xhr, status, e ){
-                        jQuery.templates[ tmpl.url ] = jQuery.tmpl( 
-                            'Failed to load template from '+tmpl.url +
-                            '('+status+')'+e
-                        );
-                        // if a rendering callback was provided, use it
-                        if( tmpl.error )
-                            tmpl.error( jQuery.render( tmpl.url, tmpl.templateData ) );
-                    }
-                })
-                request = jQuery.ajax( options );
-                
-                // for non async renderings if they provide no success callback
-                // allow the rendered template to be returned
-                return ( tmpl.async === false ) && !tmpl.success ? 
-                    jQuery.render( tmpl.url, tmpl.templateData ) : request;
-            }
 
-			fn = fn || jQuery.tmpl( tmpl );
-			
-			// We assume that if the template string is being passed directly
-			// in the user doesn't want it cached. They can stick it in
-			// jQuery.templates to cache it.
-
-			if ( jQuery.isArray( data ) ) {
-				return jQuery.map( data, function( data, i ) {
-					return fn.call( data, jQuery, data, i );
-				});
-
-			} else {
-				return fn.call( data, jQuery, data, 0 );
-			}
-		},
+		if ( args.length === 2 && typeof args[0] === "string" && typeof args[1] !== "string" ) {
+			arguments[0] = [ jQuery.render( args[0], args[1] ) ];
+		}
 		
-		// You can stick pre-built template functions here
-		templates: {},
+		return oldManip.apply( this, arguments );
+	}
+});
 
-		encode: function( text ) {
-			return text != null ? document.createTextNode( text.toString() ).nodeValue : "";
-		},
-
-		tmpl: function(str, data, i) {
-			// Generate a reusable function that will serve as a template
-			// generator (and which will be cached).
-            
-            var fn,
-                fnstring = "\n\
-    var $ = jQuery, \n\
-        T = [], \n\
-        _ = $.tmpl.filters; \n\
-    \n\
-    //make data available on tmpl.filters as object not part of global scope \n\
-    _.data = T.data = $data; \n\
-    T.index = $i; \n\
-    \n\
-    // Introduce the data as local variables using with(){} \n\
-    with(_)with($data){\n\
-        T.push('" +
-
-            // Convert the template into pure JavaScript
-            str 
-                .replace(/[\r\t\n]/g, " ")
-                .replace(/\${([^}]*)}/g, "{{= $1}}")
-                .replace(/([^\\])?'/g,"$1\\'")//escape ' to \'
-                .replace(/{{(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?}}/g, function(all, slash, type, fnargs, args) {
-                    var tmpl = jQuery.tmpl.tags[ type ];
-                    
-                    if ( !tmpl ) {
-                        throw "Template not found: " + type;
-                    }
-
-                    var def = tmpl._default;
-
-                    var result = "');" + tmpl[slash ? "suffix" : "prefix"]
-                        .split("$1").join(args || def[0])
-                        .split("$2").join(fnargs || def[1]) + 
-                        "\n        T.push('";
+jQuery.extend({
+	render: function( tmpl, data ) {
+        var fn, request;
+		
+		// Use a pre-defined template, if available
+		if ( jQuery.templates[ tmpl ] ) {
+			fn = jQuery.templates[ tmpl ];
+		// We're pulling from a script node
+		} else if ( tmpl.nodeType ) {
+			var node = tmpl, elemData = jQuery.data( node )||{};
+            //if script node is empty and has a src attribute honor it
+            if(node.src){
+                //call re-call render with src url
+                return jQuery.render( node.src, data, callback );
+            }else{
+                fn = elemData.tmpl || jQuery.tmpl( node.innerHTML );
+            }
+        // passing object implies ajax fetch of remote template
+		} else if ( jQuery.isPlainObject( tmpl ) ){
+            // TODO: re-think but render as-is cant support async
+            // since it is expected to return the rendered template
+            // as a string - might be nice to have optional arg for
+            // callback of aynch template rendering. :DONE
+            var options = jQuery.extend( {}, tmpl, {
+                // url is a required property of the passed options
+                type: 'GET',
+                dataType: 'text',
+                success: function( text ){
+                    jQuery.templates[ tmpl.url ] = jQuery.tmpl( text );
+                    // if a rendering callback was provided, use it
+                    if( tmpl.success )
+                        tmpl.success( jQuery.render( tmpl.url, tmpl.templateData ) );
                         
-                    return result;
-                })
-    + "');\n\
-    }\n\
-    //reset the tmpl.filter data object \n\
-    _.data = null;\n\
-    return $(T.join('')).get();";
+                },
+                error: function( xhr, status, e ){
+                    jQuery.templates[ tmpl.url ] = jQuery.tmpl( 
+                        'Failed to load template from '+tmpl.url +
+                        '('+status+')'+e
+                    );
+                    // if a rendering callback was provided, use it
+                    if( tmpl.error )
+                        tmpl.error( jQuery.render( tmpl.url, tmpl.templateData ) );
+                }
+            })
+            request = jQuery.ajax( options );
             
-            //provide some feedback if they are in tmpl.debug mode
-            if (jQuery.tmpl.debug)
-                console.debug(fnstring);
-            
-            try{    
-                fn = new Function("jQuery","$data","$i",fnstring );
-            }catch(e){
-                //a little help debugging;
-                //console.error(e);
-                console.warn(fnstring);
-                throw(e);
-            }
-
-            
-            // Provide some basic currying to the user
-			return data ? fn.call( this, jQuery, data, i ) : fn;
-		}
-	});
-    
-    jQuery.extend(jQuery.tmpl,{
-        debug: false,
-        tags:{
-            /*
-             * For example, someone could do:
-             *   jQuery.templates.foo = jQuery.tmpl("some long templating string");
-             *   $("#test").append("foo", data);
-             */
-            each: {
-                _default: [ null, "$i" ],
-                prefix: "\n\tjQuery.each($1,function($2){\n\t\twith(this){\n",
-                suffix: "\n}});"
-            },
-            'if': {
-                prefix: "if($1){",
-                suffix: "}"
-            },
-            'else': {
-                prefix: "}else{"
-            },
-            html: {
-                prefix: "\nT.push(typeof $1==='function'?$1.call(this):$1);"
-            },
-            "=": {
-                _default: [ "this" ],
-                prefix: "\n\t\tT.push($.encode(typeof $1==='undefined'?'':typeof $1==='function'?$1.call(this):$1));"
-            }
-        },
-        filters : {
-            //default filters
-            join: function(){
-               return Array.prototype.join.call(arguments[0], arguments[1]);
-            }
+            // for non async renderings if they provide no success callback
+            // allow the rendered template to be returned
+            return ( tmpl.async === false ) && !tmpl.success ? 
+                jQuery.render( tmpl.url, tmpl.templateData ) : request;
         }
-    });
+
+		fn = fn || jQuery.tmpl( tmpl );
+		
+		// We assume that if the template string is being passed directly
+		// in the user doesn't want it cached. They can stick it in
+		// jQuery.templates to cache it.
+
+		if ( jQuery.isArray( data ) ) {
+			return jQuery.map( data, function( data, i ) {
+				return fn.call( data, jQuery, data, i );
+			});
+
+		} else {
+			return fn.call( data, jQuery, data, 0 );
+		}
+	},
+	
+	// You can stick pre-built template functions here
+	templates: {},
+
+	encode: function( text ) {
+		return text != null ? document.createTextNode( text.toString() ).nodeValue : "";
+	},
+
+    /*
+     * For example, someone could do:
+     *   jQuery.templates.foo = jQuery.tmpl("some long templating string");
+     *   $("#test").append("foo", data);
+     */
+	tmpl: function(str, data, i) {
+		// Generate a reusable function that will serve as a template
+		// generator (and which will be cached).
+        
+        var fn,
+            fnstring = "\n\
+var $ = jQuery, \n\
+    T = [], \n\
+    _ = $.tmpl.filters; \n\
+\n\
+//make data available on tmpl.filters as object not part of global scope \n\
+_.data = T.data = $data; \n\
+_.$i = T.index = $i; \n\
+T._ = null; //can be used for tmp variables\n\
+function pushT(T,_this){\n\
+    return T.push($.encode(typeof( T._ )==='function'?T._.call(_this):T._));\n\
+}\n\
+\n\
+// Introduce the data as local variables using with(){} \n\
+with($.extend($data,_)){\n\
+    T.push('" +
+
+        // Convert the template into pure JavaScript
+        str .replace(/([\\'])/g, "\\$1")
+            .replace(/[\r\t\n]/g, " ")
+            .replace(/\${([^}]*)}/g, "{{= $1}}")
+            .replace(/{{(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?}}/g, function(all, slash, type, fnargs, args) {
+                var tmpl = jQuery.tmpl.tags[ type ];
+                
+                if ( !tmpl ) {
+                    throw "Template not found: " + type;
+                }
+
+                var def = tmpl._default||[];
+
+                var result = "');" + tmpl[slash ? "suffix" : "prefix"]
+                    .split("$1").join(args || def[0])
+                    .split("$2").join(fnargs || def[1]) + 
+                    "\n        T.push('";
+                    
+                return result;
+            })
++ "');\n\
+}\n\
+//reset the tmpl.filter data object \n\
+_.data = null;\n\
+return $(T.join('')).get();";
+        
+        //provide some feedback if they are in tmpl.debug mode
+        if (jQuery.tmpl.debug)
+            console.debug(fnstring);
+        
+        try{    
+            fn = new Function("jQuery","$data","$i",fnstring );
+        }catch(e){
+            //a little help debugging;
+            //console.error(e);
+            console.warn(fnstring);
+            throw(e);
+        }
+
+        
+        // Provide some basic currying to the user
+		return data ? fn.call( this, jQuery, data, i ) : fn;
+	}
+});
+
+/*
+ * jQuery.tmpl.filters
+ * 
+ * These are the core supported filters.  Filters are functions made available
+ * to templates.  Some may be chainable, some are not.  See the tmpl.filter.js
+ * plugin for an example of how to extend filters for a good cause.  
+ * 
+ * Extending filters is a much better pattern than adding functions to the 
+ * template data object, though that is also valid.
+ */
+jQuery.tmpl.filters = {
+    //default filters
+    join: function(){
+       return Array.prototype.join.call(arguments[0], arguments[1]);
+    },
+    defined: function(name, scope){
+        var parts = name.replace(/\s/g,' ').split(' '), result,
+            not = parts.length?parts[0].match(/^not/):false;
+        if(not)parts.shift();
+        scope = jQuery.tmpl.filters.resolve(parts[0], scope);
+        return  not?!scope:scope;
+    },
+    resolve: function(name, scope){
+        //resolves a dot delimited value on scope
+        var parts = name.split('.'), result;
+        while(parts.length && (name = parts.shift())  && scope){
+            scope = (name in scope)?scope[name]:undefined;
+        }
+        return scope;
+    }
+};
+
+/*
+ * jQuery.tmpl.debug 
+ * 
+ * By default its false, but when set to true you will get additional debug
+ * messages as well as be able to see firebug output of compiled templates
+ * before they are compiled as Functions
+ */
+jQuery.tmpl.debug = false;
+    
+/* jQuery.tmpl.tags
+ * 
+ * These are the core supported tags.  each should have an example in the
+ * example directory.
+ *  
+ * NOTE: the source is shifted to help readability in this block and for
+ * template debugging via firebug
+ */
+    
+jQuery.tmpl.tags = {
+
+// allows template developers to provide notes            
+'comment': {
+    prefix: "/*",
+    suffix: "*/"
+},
+
+// iterate over items in an array
+'each': {
+    _default: [ null, "$i" ],
+    prefix: "\n\
+        jQuery.each($1,function($2){\n\
+        with(this){",
+    suffix: "\n\
+        }\n\
+        });"
+},
+
+// a general logical operator
+'if': {
+    prefix: "\n\
+        if( _.defined('$1', this) ){",
+    suffix: "\n\
+        }"
+},
+
+// if the logical operator fails
+'else': {
+    prefix: "\n\
+        }else{"
+},
+
+// allows for html injection
+'html': {
+    prefix: "\n\
+        T.push(typeof $1==='function'?$1.call(this):$1);"
+},
+
+// provides support for alternate filter tag syntax, reused internally
+'=': {
+    _default: [ "this" ],
+    prefix: "\n\
+        try{ T._=$1; }catch(e){ T._ = _.defined('$1', this); }\n\
+        (T._!==undefined)?pushT(T, this):'';T._=null;"
+}
+
+};//end jQuery.tmpl.tags
+
     
 })(jQuery);
+
+        

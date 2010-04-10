@@ -11,6 +11,7 @@
 <script id="tmpl2" type="text/html">
 {{extend #tmpl1}}
 <ul>
+    <li>extend local template</li>
     {{each(i,city) cities}}
     <li> ${$i}) City: ${city}</li>
     {{/each}}
@@ -21,6 +22,7 @@
 <script id="tmpl3" type="text/html">
 {{extend templates/base.html}}
 <ul>
+    <li>extend remote template</li>
     {{each(i,city) cities}}
     <li> ${$i}) City: ${city}</li>
     {{/each}}
