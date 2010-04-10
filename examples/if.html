@@ -1,0 +1,50 @@
+<script src="jquery.js"></script>
+<script src="../jquery.tmpl.js"></script>
+
+<script id='tmpl' type="text/html">
+    
+    <h2>Animal Sounds</h2>
+    {{if pig}}
+       <p> this is a pig, "oink" </p>
+    {{/if}}
+    
+    <p>There should not be a horse here</p>
+    {{if horse}}
+       <p> this is a horse, "neighhh" </p>
+    {{/if}}
+    
+    {{if pets.cat}}
+       <p> this is a cat, "${pets.cat}" </p>
+    {{/if}}
+    
+    <p>There be a horse here</p>
+    {{if not horse}}
+       <p> this is a horse, "neighhh" </p>
+    {{/if}}
+    
+    {{if not pets.bird}}
+       <p> the cat ate the bird! </p>
+    {{/if}}
+</script>
+
+
+<script>
+jQuery(function(){
+    jQuery.tmpl.debug = true;
+    var dataObject = {
+        pig : true,
+        pets : {
+            cat: "meow",
+            dog: "bark",
+            bird: false
+        },
+        cow: {
+            sound: "moo",
+            weight: 1000
+        }
+    };
+    jQuery('#tmpl').render( dataObject ).appendTo("#main");
+});
+</script>
+
+<div id='main'></div>
