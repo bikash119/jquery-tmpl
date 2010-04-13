@@ -152,7 +152,7 @@ try{\n\
         str .replace(/([\\'])/g, "\\$1")
             .replace(/[\r\t\n]/g, " ")
             .replace(/\${([^}]*)}/g, "{{= $1}}")
-            .replace(/{{(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?}}/g, 
+            .replace(/{{\s*(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?\s*}}/g,
                 function(all, slash, type, fnargs, args) {
                     var tmpl = jQuery.tmpl.tags[ type ];
                     
@@ -174,7 +174,7 @@ try{\n\
     if($.tmpl.debug){\n\
         T.push('<p>'+e+'</p>');\n\
     }else{\n\
-        T.push('<!--'+e+'-->');\n\
+        T.push('');\n\
     }\n\
 }//end try/catch\n\
 }\n\

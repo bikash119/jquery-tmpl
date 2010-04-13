@@ -6,9 +6,9 @@
     This should print.
 
     <h2>Animal Sounds</h2>
-    {{if pig}}
+    {{ if pig}}
        <p> this is a pig, "oink" </p>
-    {{/if}}
+    {{ /if }}
     
     <p>There should not be a horse here</p>
     {{if "horse" in this}}
@@ -28,7 +28,7 @@
        <p> bad pussy cat! </p>
     {{/if}}
     
-    {{if cow.weight > 900}}
+    {{ if cow.weight > 900 }}
        <p> oh my, what a cow! "${cow.sound}"</p>
     {{/if}}
     
