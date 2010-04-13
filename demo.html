@@ -22,7 +22,7 @@ jQuery(function(){
 	
 	var tmpl = '<li>${$i}) <a href="${url}">${name}</a> (${cityJoin})</li>';
 
-    jQuery.tmpl.debug = true;
+    //jQuery.tmpl.debug = true;
     
 	$("#sometmpl1")
     	.render( dataObject ) // Returns a LI with all the data filled in
@@ -65,6 +65,10 @@ jQuery(function(){
         templateData: dataObject
     }) );
     
+    $("#sometmpl4")
+        .render( dataObject ) // Returns a LI with all the data filled in
+        .appendTo("ul");
+    
 });
 </script>
 
@@ -77,14 +81,14 @@ jQuery(function(){
        This comment is ignored by the templating engine.
        so is the ${foo} following this
     {{/comment}}
-    ${foo}
 	<li>${$i}) <a href="${url}">${name}</a> Cities: {{each(i,city) cities}}${city}{{/each}}</li>
+    ${foo}
 </script>
 
 <script id="sometmpl3" type="text/html">
     <li>Cities: ${ join(cities,"-") }</li>
 </script>
 
-<script id="sometmpl4" src='examples/templates/remote.html' type="text/html"> </script>
+<script id="sometmpl4" src='examples/templates/remote3.html' type="text/html"> </script>
 
 <ul></ul>

@@ -3,13 +3,15 @@
 
 <script id='tmpl' type="text/html">
     
+    This should print.
+
     <h2>Animal Sounds</h2>
     {{if pig}}
        <p> this is a pig, "oink" </p>
     {{/if}}
     
     <p>There should not be a horse here</p>
-    {{if horse}}
+    {{if "horse" in this}}
        <p> this is a horse, "neighhh" </p>
     {{/if}}
     
@@ -18,13 +20,29 @@
     {{/if}}
     
     <p>There be a horse here</p>
-    {{if not horse}}
+    {{if !("horse" in this)}}
        <p> this is a horse, "neighhh" </p>
     {{/if}}
     
-    {{if not pets.bird}}
+    {{if !pets.bird}}
+       <p> bad pussy cat! </p>
+    {{/if}}
+    
+    {{if cow.weight > 900}}
+       <p> oh my, what a cow! "${cow.sound}"</p>
+    {{/if}}
+    
+    Nothing after START will print because this causes an error
+    since lamb is not defined (unless jQuery.tmpl.debug is true,
+    in which case you will see an error message in its place)
+    START
+    {{if lamb}}
        <p> the cat ate the bird! </p>
     {{/if}}
+    END
+    
+    <p>E-I-E-I-OHHHHH!</p>
+
 </script>
 
 

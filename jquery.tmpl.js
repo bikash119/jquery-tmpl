@@ -17,7 +17,9 @@ var oldManip = jQuery.fn.domManip,
 jQuery.fn.extend({
 	render: function( data ) {
 		return this.map(function(i, tmpl){
-			return jQuery.render( tmpl, data );
+            //has to assume the rendered string can be treated as html content
+            //which can get a little fishy if the string is query-like
+			return  jQuery.render( tmpl, data );
 		});
 	},
 	
@@ -30,7 +32,7 @@ jQuery.fn.extend({
 		}
 
 		if ( args.length === 2 && typeof args[0] === "string" && typeof args[1] !== "string" ) {
-			arguments[0] = [ jQuery.render( args[0], args[1] ) ];
+            arguments[0] = [ $(jQuery.render( args[0], args[1] )).get() ];
 		}
 		
 		return oldManip.apply( this, arguments );
@@ -38,6 +40,8 @@ jQuery.fn.extend({
 });
 
 jQuery.extend({
+    // note: render was changed to return a string not a jQuery object.
+    // while fn.render does return a jquery object
 	render: function( tmpl, data ) {
         var fn, request;
 		
@@ -49,8 +53,12 @@ jQuery.extend({
 			var node = tmpl, elemData = jQuery.data( node )||{};
             //if script node is empty and has a src attribute honor it
             if(node.src){
-                //call re-call render with src url
-                return jQuery.render( node.src, data, callback );
+                //call re-call render via syncronous ajax with src url
+                return jQuery.render({
+                    async: false,
+                    url: node.src, 
+                    templateData: data 
+                });
             }else{
                 fn = elemData.tmpl || jQuery.tmpl( node.innerHTML );
             }
@@ -137,33 +145,46 @@ function pushT(T,_this){\n\
 \n\
 // Introduce the data as local variables using with(){} \n\
 with($.extend($data,_)){\n\
+try{\n\
     T.push('" +
 
         // Convert the template into pure JavaScript
         str .replace(/([\\'])/g, "\\$1")
             .replace(/[\r\t\n]/g, " ")
             .replace(/\${([^}]*)}/g, "{{= $1}}")
-            .replace(/{{(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?}}/g, function(all, slash, type, fnargs, args) {
-                var tmpl = jQuery.tmpl.tags[ type ];
-                
-                if ( !tmpl ) {
-                    throw "Template not found: " + type;
-                }
-
-                var def = tmpl._default||[];
-
-                var result = "');" + tmpl[slash ? "suffix" : "prefix"]
-                    .split("$1").join(args || def[0])
-                    .split("$2").join(fnargs || def[1]) + 
-                    "\n        T.push('";
+            .replace(/{{(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?}}/g, 
+                function(all, slash, type, fnargs, args) {
+                    var tmpl = jQuery.tmpl.tags[ type ];
                     
-                return result;
-            })
+                    if ( !tmpl ) {
+                        throw "Template not found: " + type;
+                    }
+    
+                    var def = tmpl._default||[];
+    
+                    var result = "');" + tmpl[slash ? "suffix" : "prefix"]
+                        .split("$1").join(args || def[0])
+                        .split("$2").join(fnargs || def[1]) + 
+                        "\n        T.push('";
+                        
+                    return result;
+                })
 + "');\n\
+}catch(e){\n\
+    if($.tmpl.debug){\n\
+        T.push('<p>'+e+'</p>');\n\
+    }else{\n\
+        T.push('<!--'+e+'-->');\n\
+    }\n\
+}//end try/catch\n\
 }\n\
 //reset the tmpl.filter data object \n\
 _.data = null;\n\
-return $(T.join('')).get();";
+// yuck but I cant get jquery to return text nodes that are part of a \n\
+// template that looks like ' this text doesnt show <p>just the paragraph</p>'\n\
+// apparently because line 125 in jquery 1.4.2 uses match[1] to build the \n\
+// fragment not match[0] \n\
+return $( $('<div>'+T.join('\\n')+'</div>')[0].childNodes ).get();";
         
         //provide some feedback if they are in tmpl.debug mode
         if (jQuery.tmpl.debug)
@@ -238,8 +259,10 @@ jQuery.tmpl.tags = {
 
 // allows template developers to provide notes            
 'comment': {
-    prefix: "/*",
-    suffix: "*/"
+    prefix: "\n\
+    /*",
+    suffix: "\n\
+    */"
 },
 
 // iterate over items in an array
@@ -256,7 +279,7 @@ jQuery.tmpl.tags = {
 // a general logical operator
 'if': {
     prefix: "\n\
-        if( _.defined('$1', this) ){",
+        if( $1 ){",
     suffix: "\n\
         }"
 },
@@ -277,7 +300,7 @@ jQuery.tmpl.tags = {
 '=': {
     _default: [ "this" ],
     prefix: "\n\
-        try{ T._=$1; }catch(e){ T._ = _.defined('$1', this); }\n\
+        T._ = $1;\n\
         (T._!==undefined)?pushT(T, this):'';T._=null;"
 }
 
