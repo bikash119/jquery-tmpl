@@ -137,7 +137,7 @@ var $ = jQuery, \n\
 \n\
 //make data available on tmpl.filters as object not part of global scope \n\
 _.data = T.data = $data; \n\
-_.$i = T.index = $i; \n\
+_.$i = T.index = $i||0; \n\
 T._ = null; //can be used for tmp variables\n\
 function pushT(T,_this){\n\
     return T.push($.encode(typeof( T._ )==='function'?T._.call(_this):T._));\n\
