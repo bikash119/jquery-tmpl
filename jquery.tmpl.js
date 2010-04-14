@@ -286,8 +286,10 @@ jQuery.tmpl.tags = {
 'each': {
     _default: [ null, "$i" ],
     prefix: "\n\
-        jQuery.each( $1, function($2){ ",
+        jQuery.each( $1, function($2){\n\
+            with(this){",
     suffix: "\n\
+            }\n\
         });"
 },
 
