@@ -115,6 +115,7 @@ jQuery.extend({
 	
 	// You can stick pre-built template functions here
 	templates: {},
+    
 
 	encode: function( text ) {
 		return text != null ? document.createTextNode( text.toString() ).nodeValue : "";
@@ -126,6 +127,22 @@ jQuery.extend({
      *   $("#test").append("foo", data);
      */
 	tmpl: function(str, data, i) {
+        if(!(TAG && EXPRESSION)){
+            TAG = new RegExp(
+                jQuery.tmpl.startTag + 
+                '\\s*(\\/?)(\\w+|.)(?:\\((.*?)\\))?(?: (.*?))?\\s*'+
+                jQuery.tmpl.endTag, 'g'
+            );
+            EXPRESSION = new RegExp(
+                jQuery.tmpl.startExpression + 
+                '([^'+jQuery.tmpl.endExpression+']*)'+
+                jQuery.tmpl.endExpression, 'g'
+            );
+            //normalize to string form so they can be used to generate real
+            //start and end tags
+            jQuery.tmpl.startTag = jQuery.tmpl.startTag.replace('\\','', 'g');
+            jQuery.tmpl.endTag = jQuery.tmpl.endTag.replace('\\','', 'g');
+        }
 		// Generate a reusable function that will serve as a template
 		// generator (and which will be cached).
         
@@ -139,8 +156,8 @@ var $ = jQuery, \n\
 _.data = T.data = $data; \n\
 _.$i = T.index = $i||0; \n\
 T._ = null; //can be used for tmp variables\n\
-function pushT(T,_this){\n\
-    return T.push($.encode(typeof( T._ )==='function'?T._.call(_this):T._));\n\
+function pushT(value,_this){\n\
+    return T.push($.encode(typeof( value )==='function'?value.call(_this):value));\n\
 }\n\
 \n\
 // Introduce the data as local variables using with(){} \n\
@@ -151,24 +168,23 @@ try{\n\
         // Convert the template into pure JavaScript
         str .replace(/([\\'])/g, "\\$1")
             .replace(/[\r\t\n]/g, " ")
-            .replace(/\${([^}]*)}/g, "{{= $1}}")
-            .replace(/{{\s*(\/?)(\w+|.)(?:\((.*?)\))?(?: (.*?))?\s*}}/g,
-                function(all, slash, type, fnargs, args) {
-                    var tmpl = jQuery.tmpl.tags[ type ];
+            .replace(EXPRESSION, jQuery.tmpl.startTag+"= $1"+jQuery.tmpl.endTag)
+            .replace(TAG, function(all, slash, type, fnargs, args) {
+                var tmpl = jQuery.tmpl.tags[ type ];
+                
+                if ( !tmpl ) {
+                    throw "Template not found: " + type;
+                }
+
+                var def = tmpl._default||[];
+
+                var result = "');" + tmpl[slash ? "suffix" : "prefix"]
+                    .split("$1").join(args || def[0])
+                    .split("$2").join(fnargs || def[1]) + 
+                    "\n        T.push('";
                     
-                    if ( !tmpl ) {
-                        throw "Template not found: " + type;
-                    }
-    
-                    var def = tmpl._default||[];
-    
-                    var result = "');" + tmpl[slash ? "suffix" : "prefix"]
-                        .split("$1").join(args || def[0])
-                        .split("$2").join(fnargs || def[1]) + 
-                        "T.push('";
-                        
-                    return result;
-                })
+                return result;
+            })
 + "');\n\
 }catch(e){\n\
     if($.tmpl.debug){\n\
@@ -194,7 +210,6 @@ return $( $('<div>'+T.join('\\n')+'</div>')[0].childNodes ).get();";
             fn = new Function("jQuery","$data","$i",fnstring );
         }catch(e){
             //a little help debugging;
-            //console.error(e);
             console.warn(fnstring);
             throw(e);
         }
@@ -205,6 +220,30 @@ return $( $('<div>'+T.join('\\n')+'</div>')[0].childNodes ).get();";
 	}
 });
 
+/*
+ * jQuery.tmpl options 
+ * 
+ * tmpl.debug
+ * By default its false, but when set to true you will get additional debug
+ * messages as well as be able to see firebug output of compiled templates
+ * before they are compiled as Functions
+ * 
+ * tmpl.startTag etc
+ * These allow for the possibility of modifying the global tag/expression
+ * characters in case they conflict with another preprocessor.  They must
+ * use RegExp style string so special characters must be escaped by \\
+ */
+jQuery.extend( jQuery.tmpl, {
+    debug : false,
+    startTag : '{{',
+    endTag : '}}',
+    startExpression :'\\${',
+    endExpression :'}'
+});
+
+var TAG,
+    EXPRESSION;
+    
 /*
  * jQuery.tmpl.filters
  * 
@@ -219,32 +258,10 @@ jQuery.tmpl.filters = {
     //default filters
     join: function(){
        return Array.prototype.join.call(arguments[0], arguments[1]);
-    },
-    defined: function(name, scope){
-        var parts = name.replace(/\s/g,' ').split(' '), result,
-            not = parts.length?parts[0].match(/^not/):false;
-        if(not)parts.shift();
-        scope = jQuery.tmpl.filters.resolve(parts[0], scope);
-        return  not?!scope:scope;
-    },
-    resolve: function(name, scope){
-        //resolves a dot delimited value on scope
-        var parts = name.split('.'), result;
-        while(parts.length && (name = parts.shift())  && scope){
-            scope = (name in scope)?scope[name]:undefined;
-        }
-        return scope;
     }
 };
 
-/*
- * jQuery.tmpl.debug 
- * 
- * By default its false, but when set to true you will get additional debug
- * messages as well as be able to see firebug output of compiled templates
- * before they are compiled as Functions
- */
-jQuery.tmpl.debug = false;
+
     
 /* jQuery.tmpl.tags
  * 
@@ -298,12 +315,11 @@ jQuery.tmpl.tags = {
         T.push(typeof $1==='function'?$1.call(this):$1);"
 },
 
-// provides support for alternate filter tag syntax, reused internally
+// provides support for alternate evaluation tag syntax, reused internally
 '=': {
     _default: [ "this" ],
     prefix: "\n\
-        T._ = $1;\n\
-        (T._!==undefined)?pushT(T, this):'';T._=null;"
+        ($1!==undefined)?pushT($1, this):'';"
 }
 
 };//end jQuery.tmpl.tags

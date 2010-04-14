@@ -3,22 +3,65 @@
 <script src="../plugins/tmpl.switch.js"></script>
 
 <script id='tmpl' type="text/html">
-    not working yet, sorry...
-    {{ comment }}
+    This example demonstrates a very basic <b>swtich</b>
     <h2>Animal Farm:</h2>
-    {{ switch this }}
+    
+    <h3>"${pig.sound}"</h3>
+    {{ switch pig.sound }}
+        {{ case "oink" }} 
+        <p>this is a pig ${pig.sound}</p> 
+        {{ /case }}
+        {{ case "meow" }}
+        <p>this is a cat</p>
+        {{ /case }}
+        {{ case "bark" }}
+        <p>this is a dog</p>
+        {{ /case }}
+        {{ case "chirp" }}
+        <p>this is a bird</p>
+        {{ /case }}
+        {{ default }}
+        <p>oh my</p>
+        {{ /default }}
+    {{ /switch }}
+    
+    
+    <h3>"${cat.sound}"</h3>
+    {{ switch cat.sound }}
         {{ case "oink" }} 
         <p>this is a pig</p> 
+        {{ /case }}
         {{ case "meow" }}
         <p>this is a cat</p>
         {{ case "bark" }}
-        <p>this is a dog</p>
+        <p>fall through to -this is a dog</p>
+        {{ /case }}
         {{ case "chirp" }}
-        <p>this is a pig</p>
+        <p>this is a bird</p>
+        {{ /case }}
         {{ default }}
         <p>oh my</p>
+        {{ /default }}
     {{ /switch }}
-    {{ /comment }}
+        
+        
+    <h3>" shnurp "</h3>
+    {{ switch "shnurp" }}
+        {{ case "oink" }} 
+        <p>this is a pig</p> 
+        {{ /case }}
+        {{ case "meow" }}
+        <p>this is a cat</p>
+        {{ case "bark" }}
+        <p>fall through to -this is a dog</p>
+        {{ /case }}
+        {{ case "chirp" }}
+        <p>this is a bird</p>
+        {{ /case }}
+        {{ default }}
+        <p>oh my, what is that?</p>
+    {{ /switch }}
+    
 </script>
 
 
@@ -32,11 +75,7 @@ jQuery(function(){
         bird:   {sound: "chirp"},
         cow:    {sound: "moo"}
     };
-    jQuery('#tmpl').render( animals.pig ).appendTo("#main");
-    /*jQuery('#tmpl').render( animals.cat ).appendTo("#main");
-    jQuery('#tmpl').render( animals.dog ).appendTo("#main");
-    jQuery('#tmpl').render( animals.bird ).appendTo("#main");
-    jQuery('#tmpl').render( animals.cow ).appendTo("#main");*/
+    jQuery('#tmpl').render( animals ).appendTo("#main");
 });
 </script>
 

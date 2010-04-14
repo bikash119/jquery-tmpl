@@ -8,8 +8,10 @@
 "switch": {
     _default: [ null, null ],
     prefix: "\n\
-        switch( $1 ){",
+        switch( $1 ){\n\
+            case 'thiscaseshouldneverbetrue': ",
     suffix:"\n\
+            break;\n\
         }"
         
 },
