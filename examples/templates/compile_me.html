@@ -1,0 +1,71 @@
+
+<h2>Animal Sounds</h2>
+{{ if pig}}
+   <p> this is a pig, "oink" </p>
+{{ /if }}
+
+<p>There should not be a horse here</p>
+{{if "horse" in this}}
+   <p> this is a horse, "neighhh" </p>
+{{else}}  
+   <p> not a horse here </p>
+{{/if}}
+
+{{if pets.cat}}
+   <p> this is a cat, "${pets.cat}" </p>
+{{/if}}
+
+<p>There be a horse here</p>
+{{if !("horse" in this)}}
+   <p> this is a horse, "neighhh" </p>
+{{/if}}
+
+{{if !pets.bird}}
+   <p> bad pussy cat! </p>
+{{/if}}
+
+{{ if cow.weight < 900 }}
+   <p> No sir, I dont like it! </p>
+{{ elseif cow.weight == 1000}}
+   <p> oh my, what a cow! "${cow.sound}"</p>
+{{ else }}
+   <p> powder toast! </p>
+{{/if}}
+
+Nothing after START will print because this causes an error
+since lamb is not defined (unless jQuery.tmpl.debug is true,
+in which case you will see an error message in its place)
+START
+{{if lamb}}
+   <p> the cat ate the bird! </p>
+{{/if}}
+END
+
+<p>E-I-E-I-OHHHHH!</p>
+
+<h2>you shouldn't see any else</h2>
+{{comment}}
+    this is a pig, "oink"
+{{/comment}}
+
+this template demonstrates the use of the <b>each</b> tag
+
+<h2>Hot Wheels</h2>
+<h3>seussical cars</h3>
+{{ each cars }}
+   <p> ${this} </p>
+{{ /each }}
+
+<h3>working mans ride</h3>
+{{ each trucks }}
+   <p> ${this} </p>
+{{ /each }}
+
+<h3>my dream rides (in order of dreaminess)</h3>
+<ul>
+{{ each( favorite, dreamy ) classics }}
+   <li> 
+   my #${ favorite+1 } dreamiest ride would be a ${dreamy.year} ${dreamy.make} ${dreamy.model}
+   </li>
+{{ /each }}
+</ul>

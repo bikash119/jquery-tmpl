@@ -1,0 +1,83 @@
+<script src="jquery.js"></script>
+<script src="../jquery.tmpl.js"></script>
+
+<script id='tmpl' type="text/html">
+    
+    This example demonstrates the <b>alternate tag</b> syntax
+
+    <h2>Animal Sounds</h2>
+    (~ if pig~)
+       <p> this is a pig, "oink" </p>
+    (~ /if ~)
+    
+    <p>There should not be a horse here</p>
+    (~if "horse" in this~)
+       <p> this is a horse, "neighhh" </p>
+    (~else~)  
+       <p> not a horse here </p>
+    (~/if~)
+    
+    (~if pets.cat~)
+       <p> this is a cat, "`pets.cat`" </p>
+    (~/if~)
+    
+    <p>There be a horse here</p>
+    (~if !("horse" in this)~)
+       <p> this is a horse, "neighhh" </p>
+    (~/if~)
+    
+    (~if !pets.bird~)
+       <p> bad pussy cat! </p>
+    (~/if~)
+    
+    (~ if cow.weight < 900 ~)
+       <p> No sir, I dont like it! </p>
+    (~ elseif cow.weight == 1000~)
+       <p> oh my, what a cow! "`cow.sound`"</p>
+    (~ else ~)
+       <p> powder toast! </p>
+    (~/if~)
+    
+    Nothing after START will print because this causes an error
+    since lamb is not defined (unless jQuery.tmpl.debug is true,
+    in which case you will see an error message in its place)
+    START
+    (~if lamb~)
+       <p> the cat ate the bird! </p>
+    (~/if~)
+    END
+    
+    <p>E-I-E-I-OHHHHH!</p>
+
+</script>
+
+
+<script>
+jQuery(function(){
+    jQuery.extend(jQuery.tmpl, {
+        debug : true,
+        //use (~ ~) for tags
+        startTag : '\\(\\~',
+        endTag : '\\~\\)',
+        //use back-tick for expressions `foo.bar`
+        startExpression: '\\`',
+        endExpression: '\\`'
+        
+    })
+    var dataObject = {
+        pig : true,
+        pets : {
+            cat: "meow",
+            dog: "bark",
+            bird: false
+        },
+        cow: {
+            sound: "moo",
+            weight: 1000
+        }
+    };
+    jQuery('#tmpl').render( dataObject ).appendTo("#main");
+});
+</script>
+
+<div id='main'></div>

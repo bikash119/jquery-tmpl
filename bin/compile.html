@@ -1,0 +1,61 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta description="Put references to all of your templates here,
+            using the script tags with type set to text/html and the script
+            at the bottom will compile them all and write them out to
+            a pure js file in the generated directory.">
+		<title>Compile Templates</title>
+        <script type='text/envjs' src='../lib/jquery.js'></script>
+        <script type='text/envjs' src='../jquery.tmpl.js'></script>
+        
+        <script type='text/envjs'>
+            jQuery(function($){
+            
+                $('script[type=text/html]').each(function(){
+                    var id = $(this).attr('id');
+                    console.log('compiling %s', id);
+                    if(this.src){
+                        $.ajax({
+                            async:false,
+                            url: this.src,
+                            type:'text',
+                            success: function(text){
+                                $.templates[id] = $.tmpl( text );
+                            }
+                        })
+                    }else{
+                        $.templates[id] = $.tmpl( $(this).text() );
+                    }
+                    $.ajax({
+                        url: '../generated/'+id+'.js',
+                        async: false,
+                        type: 'PUT',
+                        data: 'jQuery.templates["'+id+'"]='+
+                            $.templates[id].toString(),
+                        processData: false,
+                        success: function(){
+                            console.log('saved generated/%s.js', id);
+                        }
+                    });
+                })
+            
+            });
+        </script>
+	</head>
+	<body>
+	    <script type='text/html' 
+                id='example'
+                src='../examples/templates/compile_me.html'></script>
+        
+        
+        <script id="sometmpl2" type="text/html">
+            {{comment}}
+               This comment is ignored by the templating engine.
+               so is the ${foo} following this
+            {{/comment}}
+            <li>${$i}) <a href="${url}">${name}</a> Cities: {{each(i,city) cities}}${city}{{/each}}</li>
+            ${foo}
+        </script>
+	</body>
+</html>
