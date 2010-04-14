@@ -165,7 +165,7 @@ try{\n\
                     var result = "');" + tmpl[slash ? "suffix" : "prefix"]
                         .split("$1").join(args || def[0])
                         .split("$2").join(fnargs || def[1]) + 
-                        "\n        T.push('";
+                        "T.push('";
                         
                     return result;
                 })
@@ -269,14 +269,12 @@ jQuery.tmpl.tags = {
 'each': {
     _default: [ null, "$i" ],
     prefix: "\n\
-        jQuery.each($1,function($2){\n\
-        with(this){",
+        jQuery.each( $1, function($2){ ",
     suffix: "\n\
-        }\n\
         });"
 },
 
-// a general logical operator
+// if/elseif/else - a general logical operator
 'if': {
     prefix: "\n\
         if( $1 ){",
@@ -284,13 +282,17 @@ jQuery.tmpl.tags = {
         }"
 },
 
-// if the logical operator fails
+'elseif': {
+    prefix: "\n\
+        }else if( $1 ){"
+},
+
 'else': {
     prefix: "\n\
         }else{"
 },
 
-// allows for html injection
+// allows for html injection?
 'html': {
     prefix: "\n\
         T.push(typeof $1==='function'?$1.call(this):$1);"

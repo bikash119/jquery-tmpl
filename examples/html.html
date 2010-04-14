@@ -1,0 +1,49 @@
+<script src="jquery.js"></script>
+<script src="../jquery.tmpl.js"></script>
+
+<script id='tmpl' type="text/html">
+    this template demonstrates the use of the <b>html</b> tag
+
+    <h2>Spaghetti Westerns</h2>
+    Sooooo......<br/>
+    {{html $("#whatishtml").html()}}
+    another
+    ${$("#whatishtml")}
+    
+    it includes things like {{html $("#htmlhere").html() }}
+    
+    <div> you can also {{html $("#morehtml")}} </div>
+</script>
+
+
+<script>
+jQuery(function(){
+    jQuery.tmpl.debug = true;
+    var dataObject = {
+        
+    };
+    jQuery('#tmpl').render( dataObject ).appendTo("#main");
+});
+</script>
+
+<div id='hiding' style='display:none'>
+    <div id='whatishtml'>
+        <a href='#'>what is a spaghetti western?</a>
+        <br/> dont be shy, havent we all wondered if
+        it was served by italians and came with a red sauce?
+    </div>
+    <div id='htmlhere'>
+        <p>rattle snake rattles</p>
+        <div>train whistles</div>
+        <pre>boots walking across a hard wood floor</pre>
+        <ul>
+            <li>a single flamenco style strum of a minor chord on an acoustic guitar</li>
+            <li>and so on...</li>
+        </ul>
+    </div>
+    <div id='morehtml'><a href='wikipedia.org/?q=html'>look it up</a></div>
+</div>
+
+
+
+<div id='main'></div>

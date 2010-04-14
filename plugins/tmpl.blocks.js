@@ -3,8 +3,6 @@
  */
 (function(){
 
-    var block_scope = [];
-
     jQuery.extend(jQuery.tmpl.tags,{
 
 block: {

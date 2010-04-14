@@ -1,0 +1,43 @@
+<script src="jquery.js"></script>
+<script src="../jquery.tmpl.js"></script>
+<script src="../plugins/tmpl.switch.js"></script>
+
+<script id='tmpl' type="text/html">
+    not working yet, sorry...
+    {{ comment }}
+    <h2>Animal Farm:</h2>
+    {{ switch this }}
+        {{ case "oink" }} 
+        <p>this is a pig</p> 
+        {{ case "meow" }}
+        <p>this is a cat</p>
+        {{ case "bark" }}
+        <p>this is a dog</p>
+        {{ case "chirp" }}
+        <p>this is a pig</p>
+        {{ default }}
+        <p>oh my</p>
+    {{ /switch }}
+    {{ /comment }}
+</script>
+
+
+<script>
+jQuery(function(){
+    jQuery.tmpl.debug = true;
+    var animals = {
+        pig :   {sound: "oink"},
+        cat:    {sound: "meow"},
+        dog:    {sound: "bark"},
+        bird:   {sound: "chirp"},
+        cow:    {sound: "moo"}
+    };
+    jQuery('#tmpl').render( animals.pig ).appendTo("#main");
+    /*jQuery('#tmpl').render( animals.cat ).appendTo("#main");
+    jQuery('#tmpl').render( animals.dog ).appendTo("#main");
+    jQuery('#tmpl').render( animals.bird ).appendTo("#main");
+    jQuery('#tmpl').render( animals.cow ).appendTo("#main");*/
+});
+</script>
+
+<div id='main'></div>

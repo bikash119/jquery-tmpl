@@ -1,0 +1,57 @@
+<script src="jquery.js"></script>
+<script src="../jquery.tmpl.js"></script>
+
+<script id='tmpl' type="text/html">
+    this template demonstrates the use of the <b>each</b> tag
+
+    <h2>Hot Wheels</h2>
+    <h3>seussical cars</h3>
+    {{ each cars }}
+       <p> ${this} </p>
+    {{ /each }}
+    
+    <h3>working mans ride</h3>
+    {{ each trucks }}
+       <p> ${this} </p>
+    {{ /each }}
+
+    <h3>my dream rides (in order of dreaminess)</h3>
+    <ul>
+    {{ each( favorite, dreamy ) classics }}
+       <li> 
+       my #${ favorite+1 } dreamiest ride would be a ${dreamy.year} ${dreamy.model} ${dreamy.make}
+       </li>
+    {{ /each }}
+    </ul>
+</script>
+
+
+<script>
+jQuery(function(){
+    jQuery.tmpl.debug = true;
+    var dataObject = {
+        cars : ['one car', 'two car', 'red car', 'blue car'],
+        trucks : {
+            monster: "sunday, sunday, sunday! monster truck rally rally rally",
+            pickup: "she left with my dog and my truck",
+            semi: "screaming semi's on the highway!"
+        },
+        classics: [{
+            make:'yugo',
+            model:'hugo',
+            year: 1973
+        },{
+            make:'ford',
+            model:'mustang',
+            year: 1969
+        },{
+            make:'dodge',
+            model:'charger',
+            year: 1979
+        }]
+    };
+    jQuery('#tmpl').render( dataObject ).appendTo("#main");
+});
+</script>
+
+<div id='main'></div>

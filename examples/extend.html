@@ -30,6 +30,13 @@
 </script>
 
 
+<script id="tmpl4" type="text/html">
+    <p>extend is also like include!</p>
+    {{ include templates/include-me.html }}
+    <p>now that is pretty useful!</p>
+</script>
+
+
 <script>
 jQuery(function(){
 	var data = {
@@ -48,10 +55,11 @@ jQuery(function(){
     	]
 	};
 	
-	jQuery('#tmpl2').render( data ).appendTo("div");
-    jQuery('#tmpl3').render( data ).appendTo("div");
+	jQuery('#tmpl2').render( data ).appendTo("#target");
+    jQuery('#tmpl3').render( data ).appendTo("#target");
+    jQuery('#tmpl4').render( data ).appendTo("#target");
 
 });
 </script>
 
-<div></div>
+<div id='target'></div>

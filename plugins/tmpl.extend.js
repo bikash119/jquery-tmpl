@@ -36,4 +36,8 @@ jQuery.extend(jQuery.tmpl.tags,{
     }
 });
 
+// extend may also work basically like what most folks would think of
+// as 'include'
+jQuery.tmpl.tags.include = jQuery.tmpl.tags.extend;
+
 })(jQuery);
