@@ -321,7 +321,7 @@ jQuery.tmpl.tags = {
 '=': {
     _default: [ "this" ],
     prefix: "\n\
-        ($1!==undefined)?pushT($1, this):'';"
+        pushT($1, this);"//($1!==undefined)?pushT($1, this):'';"
 }
 
 };//end jQuery.tmpl.tags

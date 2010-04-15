@@ -1,4 +1,4 @@
-<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../lib/jquery.js"></script>
 <script src="../jquery.tmpl.js"></script>
 
 <script id='tmpl' type="text/html">
@@ -16,6 +16,15 @@
     {{ /each }}
 
     <h3>my dream rides (in order of dreaminess)</h3>
+    <ul>
+    {{ each classics }}
+       <li> 
+       my #${ $i+1 } dreamiest ride would be a ${year} ${make} ${model}
+       </li>
+    {{ /each }}
+    </ul>
+    
+    <h3>not to repeat myself but...</h3>
     <ul>
     {{ each( favorite, dreamy ) classics }}
        <li> 
