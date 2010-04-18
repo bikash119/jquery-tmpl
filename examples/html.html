@@ -1,4 +1,4 @@
-<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../lib/jquery.js"></script>
 <script src="../jquery.tmpl.js"></script>
 
 <script id='tmpl' type="text/html">
@@ -6,13 +6,11 @@
 
     <h2>Spaghetti Westerns</h2>
     Sooooo......<br/>
-    {{html $("#whatishtml").html()}}
-    another
-    ${$("#whatishtml")}
+    {{ html $("#whatishtml").html() }}
     
-    it includes things like {{html $("#htmlhere").html() }}
+    it includes things like {{ html $("#htmlhere").html() }}
     
-    <div> you can also {{html $("#morehtml")}} </div>
+    <div> you can also {{ html $("#morehtml").html() }} </div>
 </script>
 
 
@@ -41,7 +39,9 @@ jQuery(function(){
             <li>and so on...</li>
         </ul>
     </div>
-    <div id='morehtml'><a href='wikipedia.org/?q=html'>look it up</a></div>
+    <div id='morehtml'>
+        <a href='http://en.wikipedia.org/wiki/Spaghetti_western'>look it up</a>
+    </div>
 </div>
 
 

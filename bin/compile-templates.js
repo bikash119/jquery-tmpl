@@ -15,7 +15,7 @@ Envjs.scriptTypes['text/javascript'] = true;
 // our command hook up allows you to easily use your html interface
 // from the command line
 Envjs.afterScriptLoad = {
-    'lib/jquery(.){1}js': function(script){
+    'jquery(.){1}js': function(script){
         
         // save the command-line arguments
         jQuery.args = [];
@@ -33,9 +33,12 @@ Envjs.afterScriptLoad = {
                     $.ajax({
                         async:false,
                         url: this.src,
-                        type:'text',
+                        dataType:'text',
                         success: function(text){
                             $.templates[id] = $.tmpl( text );
+                        },
+                        error: function(xhr, status, e){
+                            $.templates[id] = $.tmpl( xhr.responseText );
                         }
                     });
                 }else{

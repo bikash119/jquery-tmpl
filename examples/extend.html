@@ -1,4 +1,4 @@
-<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../lib/jquery.js"></script>
 <script src="../jquery.tmpl.js"></script>
 <script src="../plugins/tmpl.extend.js"></script>
 
@@ -10,7 +10,7 @@
 </script>
 
 <script id="tmpl2" type="text/html">
-{{extend #tmpl1}}
+{{extend "#tmpl1"}}
 <ul>
     <li>extend local template</li>
     {{each(i,city) cities}}
@@ -19,9 +19,10 @@
 </ul>
 </script>
 
-<script src="base.js" type='text/html'></script>
+<script id='base' src="templates/base.html" type='text/html'></script>
+
 <script id="tmpl3" type="text/html">
-{{extend templates/base.html}}
+{{extend "templates/base.html"}}
 <ul>
     <li>extend remote template</li>
     {{each(i,city) cities}}
@@ -33,7 +34,7 @@
 
 <script id="tmpl4" type="text/html">
     <p>extend is also like include!</p>
-    {{ include templates/include-me.html }}
+    {{ include "templates/include-me.html" }}
     <p>now that is pretty useful!</p>
 </script>
 
@@ -55,7 +56,7 @@ jQuery(function(){
             	"San Francisco, CA"
     	]
 	};
-	
+	jQuery.tmpl.debug = true;
 	jQuery('#tmpl2').render( data ).appendTo("#target");
     jQuery('#tmpl3').render( data ).appendTo("#target");
     jQuery('#tmpl4').render( data ).appendTo("#target");

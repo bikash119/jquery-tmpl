@@ -17,9 +17,14 @@ var oldManip = jQuery.fn.domManip,
 jQuery.fn.extend({
 	render: function( data ) {
 		return this.map(function(i, tmpl){
-            //has to assume the rendered string can be treated as html content
-            //which can get a little fishy if the string is query-like
-			return  jQuery.render( tmpl, data );
+            
+            // yuck but I cant get jquery to return text nodes that are part of a 
+            // template that looks like ' this text doesnt show <p>just the paragraph</p>'
+            // apparently because line 125 in jquery 1.4.2 uses match[1] to build the
+            // fragment not match[0].  I'll have to see if this is my bug or theirs
+			return  jQuery( 
+                jQuery('<div>'+ jQuery.render( tmpl, data ) +'</div>')[0].childNodes 
+            ).get();
 		});
 	},
 	
@@ -32,7 +37,9 @@ jQuery.fn.extend({
 		}
 
 		if ( args.length === 2 && typeof args[0] === "string" && typeof args[1] !== "string" ) {
-            arguments[0] = [ $(jQuery.render( args[0], args[1] )).get() ];
+            arguments[0] = [ jQuery( 
+                jQuery('<div>'+ jQuery.render( args[0], args[1] )+'</div>')[0].childNodes 
+            ).get() ];
 		}
 		
 		return oldManip.apply( this, arguments );
@@ -42,7 +49,7 @@ jQuery.fn.extend({
 jQuery.extend({
     // note: render was changed to return a string not a jQuery object.
     // while fn.render does return a jquery object
-	render: function( tmpl, data ) {
+	render: function( tmpl, data, asArray ) {
         var fn, request;
 		
 		// Use a pre-defined template, if available
@@ -102,11 +109,10 @@ jQuery.extend({
 		// We assume that if the template string is being passed directly
 		// in the user doesn't want it cached. They can stick it in
 		// jQuery.templates to cache it.
-
 		if ( jQuery.isArray( data ) ) {
-			return jQuery.map( data, function( data, i ) {
+            return jQuery.map( data, function( data, i ) {
 				return fn.call( data, jQuery, data, i );
-			});
+			}).join('');
 
 		} else {
 			return fn.call( data, jQuery, data, 0 );
@@ -156,8 +162,10 @@ var $ = jQuery, \n\
 _.data = T.data = $data; \n\
 _.$i = T.index = $i||0; \n\
 T._ = null; //can be used for tmp variables\n\
-function pushT(value,_this){\n\
-    return T.push($.encode(typeof( value )==='function'?value.call(_this):value));\n\
+function pushT(value, _this, encode){\n\
+    return encode === false ? \n\
+        T.push(typeof value ==='function'?value.call(_this):value) : \n\
+        T.push($.encode(typeof( value )==='function'?value.call(_this):value));\n\
 }\n\
 \n\
 // Introduce the data as local variables using with(){} \n\
@@ -188,7 +196,7 @@ try{\n\
 + "');\n\
 }catch(e){\n\
     if($.tmpl.debug){\n\
-        T.push('<p>'+e+'</p>');\n\
+        T.push(' '+e+' ');\n\
     }else{\n\
         T.push('');\n\
     }\n\
@@ -196,15 +204,11 @@ try{\n\
 }\n\
 //reset the tmpl.filter data object \n\
 _.data = null;\n\
-// yuck but I cant get jquery to return text nodes that are part of a \n\
-// template that looks like ' this text doesnt show <p>just the paragraph</p>'\n\
-// apparently because line 125 in jquery 1.4.2 uses match[1] to build the \n\
-// fragment not match[0] \n\
-return $( $('<div>'+T.join('\\n')+'</div>')[0].childNodes ).get();";
+return T.join('\\n')";
         
         //provide some feedback if they are in tmpl.debug mode
         if (jQuery.tmpl.debug)
-            console.debug(fnstring);
+            console.log('Generated Function: \n', fnstring);
         
         try{    
             fn = new Function("jQuery","$data","$i",fnstring );
@@ -314,14 +318,21 @@ jQuery.tmpl.tags = {
 // allows for html injection?
 'html': {
     prefix: "\n\
-        T.push(typeof $1==='function'?$1.call(this):$1);"
+        pushT($1, this, false);"
+},
+
+
+// allows for html injection?
+'ignore': {
+    prefix: "",
+    suffix: ""
 },
 
 // provides support for alternate evaluation tag syntax, reused internally
 '=': {
     _default: [ "this" ],
     prefix: "\n\
-        pushT($1, this);"//($1!==undefined)?pushT($1, this):'';"
+        pushT($1, this);"
 }
 
 };//end jQuery.tmpl.tags

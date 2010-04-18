@@ -11,8 +11,8 @@ function anonymous(jQuery, $data, $i) {
     _.data = T.data = $data;
     _.$i = T.index = $i || 0;
     T._ = null;
-    function pushT(value, _this) {
-        return T.push($.encode(typeof (value) === "function" ? value.call(_this) : value));
+    function pushT(value, _this, encode) {
+        return encode === false ? T.push(typeof value === "function" ? value.call(_this) : value) : T.push($.encode(typeof (value) === "function" ? value.call(_this) : value));
     }
     with ($.extend($data, _)) {
         try {
@@ -64,12 +64,12 @@ function anonymous(jQuery, $data, $i) {
         }
         catch (e) {
             if ($.tmpl.debug) {
-                T.push("<p>" + e + "</p>");
+                T.push(" " + e + " ");
             } else {
                 T.push("");
             }
         }
     }
     _.data = null;
-    return $($("<div>" + T.join("\n") + "</div>")[0].childNodes).get();
+    return T.join("\n");
 }

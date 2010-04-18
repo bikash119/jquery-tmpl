@@ -9,29 +9,31 @@ jQuery.extend(jQuery.tmpl.tags,{
     extend: {
         _default: [ null, null ],
         prefix: "\n\
-        if('$1'.match('#')){\n\
-            if(!('$1' in $.templates)){\n\
+        T._ = $1;\n\
+        if( T._.match('#') ){\n\
+            if(!( T._ in $.templates )){\n\
                 /*pre-compile template*/\n\
-                $.templates['$1'] = $.tmpl($('$1').text());\n\
+                $.templates[ T._ ] = $.tmpl($( T._ ).text());\n\
             }\n\
         }else{\n\
-            if(!('$1' in $.templates)){\n\
+            if(!( T._ in $.templates )){\n\
                 $.ajax({\n\
-                    url:'$1',\n\
-                    type:'GET',\n\
-                    dataType:'text',\n\
-                    async:false,\n\
-                    success:function(text){\n\
-                        $.templates['$1'] = $.tmpl(text);\n\
+                    url: T._,\n\
+                    type: 'GET',\n\
+                    dataType: 'text',\n\
+                    async: false,\n\
+                    success: function(text){\n\
+                        $.templates[ T._ ] = $.tmpl( text );\n\
                     },\n\
-                    error:function(xhr, status, e){\n\
-                        $.templates['$1'] = $.tmpl('<p>url failed to load: $1 <p>');\n\
+                    error: function(xhr, status, e){\n\
+                        $.templates[ T._ ] = $.tmpl( xhr.responseText );\n\
                     }\n\
                 });\n\
             }\n\
         }\n\
-        /*finally render using outer-html hack*/\n\
-        T.push($('<p/>').append( $.render('$1', $data) ).html());\n\
+        /*finally render */\n\
+        T.push( $.render( T._, $data ) );\n\
+        T._ = null;\n\
         "
     }
 });

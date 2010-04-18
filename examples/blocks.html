@@ -1,4 +1,4 @@
-<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../lib/jquery.js"></script>
 <script src="../jquery.tmpl.js"></script>
 <script src="../plugins/tmpl.extend.js"></script>
 <script src="../plugins/tmpl.blocks.js"></script>
@@ -14,6 +14,10 @@
     </p>
     {{block hello}}
         <p>this is the default content!</p>
+        <p>it could be anything</p>
+        {{if true}}
+            and can have nested tags and expressions like ${name}
+        {{ /if }}
     {{/block}}
     <ul>
     {{each(i,city) cities}}
@@ -23,11 +27,11 @@
 </script>
 
 <script id="tmpl2" type="text/html">
-{{extend #tmpl1}}
-{{block hello}}
+{{ extend "#tmpl1" }}
+{{ block hello }}
     <p>This is the custom content</p>
     <p>I have been to one of these cities</p>
-{{/block}}
+{{ /block }}
 </script>
 
 <script>

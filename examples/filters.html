@@ -1,4 +1,4 @@
-<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../lib/jquery.js"></script>
 <script src="../jquery.tmpl.js"></script>
 <script src="../plugins/tmpl.filters.js"></script>
 
@@ -7,36 +7,36 @@
     <h2>examples of filter as a static global</h2>
     <ul>
         <li>
-           link(lastName, url) ->
-        ${ link(lastName, url) }
+           link( lastName, url ) ->
+        ${ link( lastName, url ) }
         </li>
         <li>
-           defined("hello") ->
-        ${ defined("hello") }
+           defined( "hello" ) ->
+        ${ defined( "hello" ) }
         </li>
         <li>
-           defined("cities") ->
-        ${ defined("cities") }
+           defined( "cities" ) ->
+        ${ defined( "cities" ) }
         </li>
         <li>
-           isArray(cities) ->
-        ${ isArray(cities) }
+           isArray( cities ) ->
+        ${ isArray( cities ) }
         </li>
         <li>
-           isFunction(name) ->
-        ${ isFunction(name) }
+           isFunction( name ) ->
+        ${ isFunction( name ) }
         </li>
         <li>
-           isPlainObject(thing) ->
-        ${ isPlainObject(thing) }
+           isPlainObject( thing ) ->
+        ${ isPlainObject( thing ) }
         </li>
         <li>
-           trim("  abc \n") ->
-        ${ trim("  abc \n") }
+           trim( "  abc \n" ) ->
+        ${ trim( "  abc \n" ) }
         </li>
         <li>
-           inArray("San Francisco, CA", cities) ->
-        ${ inArray("San Francisco, CA", cities) }
+           inArray( "San Francisco, CA", cities ) ->
+        ${ inArray( "San Francisco, CA", cities ) }
         </li>
         <li>
            each( cities, cityFormatter ) -> 
@@ -59,24 +59,24 @@
     <h2>examples of filter as a function</h2>
     <ul>
         <li>
-           _(cities).join(" | ") ->
-        ${ _(cities).join(" | ") }
+           _( cities ).join( " | " ) ->
+        ${ _( cities ).join( " | " ) }
         </li>
         <li>
-           _(cities).up().join(" - ") ->
-        ${ _(cities).up().join(" - ") }
+           _( cities ).up().join( " - " ) ->
+        ${ _( cities ).up().join( " - " ) }
         </li>
         <li>
-           _(firstName, lastName).up().join(" - ") ->
-        ${ _(firstName, lastName).up().join(" - ") }
+           _( firstName, lastName ).up().join( " - " ) ->
+        ${ _( firstName, lastName ).up().join( " - " ) }
         </li>
         <li>
-           _(firstName, lastName) ->
-        ${ _(firstName, lastName) }
+           _( firstName, lastName ) ->
+        ${ _( firstName, lastName ) }
         </li>
         <li>
-           _(lastName).link(url) ->
-        ${ _(lastName).link(url) }
+           _( lastName ).link( url ) ->
+        ${ _( lastName ).link( url ) }
         </li>
     </ul>
 </script>
@@ -130,10 +130,12 @@ jQuery(function(){
             return '<a href="'+url+'">'+name+'</a>';
         },
         defined: function(name){
-            return (name in this.data);
+            return (name in this)?true:false;
         }
     });
 	
+    $.tmpl.debug = true;
+    
 	jQuery('#tmpl-filters').render( dataObject ).appendTo("div");
 
 });
