@@ -8,9 +8,11 @@
 
 // Override the DOM manipulation function
 var oldManip = jQuery.fn.domManip,
-    console = ('console' in window)?window.console: {
+    console = ('console' in window) ? window.console : {
+        log: function(){},
         debug: function(){},
         info: function(){},
+        warn: function(){},
         error: function(){}
     };
 

@@ -66,8 +66,10 @@
 
 
 <script>
-jQuery(function(){
-    jQuery.tmpl.debug = true;
+jQuery(function($){
+
+    $.tmpl.debug = true;
+    
     var animals = {
         pig :   {sound: "oink"},
         cat:    {sound: "meow"},
@@ -75,7 +77,9 @@ jQuery(function(){
         bird:   {sound: "chirp"},
         cow:    {sound: "moo"}
     };
-    jQuery('#tmpl').render( animals ).appendTo("#main");
+    
+    $('#tmpl').render( animals ).appendTo("#main");
+    
 });
 </script>
 

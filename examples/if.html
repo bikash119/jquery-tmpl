@@ -53,8 +53,10 @@
 
 
 <script>
-jQuery(function(){
-    jQuery.tmpl.debug = true;
+jQuery(function($){
+
+    $.tmpl.debug = true;
+    
     var dataObject = {
         pig : true,
         pets : {
@@ -67,7 +69,9 @@ jQuery(function(){
             weight: 1000
         }
     };
-    jQuery('#tmpl').render( dataObject ).appendTo("#main");
+    
+    $('#tmpl').render( dataObject ).appendTo("#main");
+    
 });
 </script>
 

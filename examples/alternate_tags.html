@@ -53,8 +53,9 @@
 
 
 <script>
-jQuery(function(){
-    jQuery.extend(jQuery.tmpl, {
+jQuery(function($){
+
+    $.extend( $.tmpl, {
         debug : true,
         //use (~ ~) for tags
         startTag : '\\(\\~',
@@ -63,7 +64,8 @@ jQuery(function(){
         startExpression: '\\`',
         endExpression: '\\`'
         
-    })
+    });
+    
     var dataObject = {
         pig : true,
         pets : {
@@ -76,7 +78,8 @@ jQuery(function(){
             weight: 1000
         }
     };
-    jQuery('#tmpl').render( dataObject ).appendTo("#main");
+    
+    $('#tmpl').render( dataObject ).appendTo("#main");
 });
 </script>
 

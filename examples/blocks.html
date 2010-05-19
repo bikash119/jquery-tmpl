@@ -35,7 +35,10 @@
 </script>
 
 <script>
-jQuery(function(){
+jQuery(function($){
+    
+    $.tmpl.debug = true;
+    
 	var dataObject = {
         name: function() {
 			return this.firstName + " " + this.lastName;
@@ -48,8 +51,9 @@ jQuery(function(){
         	"San Francisco, CA"
     	]
     };
-	jQuery.tmpl.debug = true;
-	jQuery('#tmpl2').render( dataObject ).appendTo("div");
+    
+	$('#tmpl2').render( dataObject ).appendTo("div");
+    
 });
 </script>
 

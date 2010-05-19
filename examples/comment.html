@@ -11,10 +11,14 @@
 
 
 <script>
-jQuery(function(){
-    jQuery.tmpl.debug = true;
+jQuery(function($){
+    
+    $.tmpl.debug = true;
+    
     var dataObject = {};
-    jQuery('#tmpl').render( dataObject ).appendTo("#main");
+    
+    $('#tmpl').render( dataObject ).appendTo("#main");
+    
 });
 </script>
 

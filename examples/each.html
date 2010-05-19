@@ -36,8 +36,10 @@
 
 
 <script>
-jQuery(function(){
-    jQuery.tmpl.debug = true;
+jQuery(function($){
+    
+    $.tmpl.debug = true;
+    
     var dataObject = {
         cars : ['one car', 'two car', 'red car', 'blue car'],
         trucks : {
@@ -59,7 +61,9 @@ jQuery(function(){
             year: 1979
         }]
     };
-    jQuery('#tmpl').render( dataObject ).appendTo("#main");
+    
+    $('#tmpl').render( dataObject ).appendTo("#main");
+    
 });
 </script>
 

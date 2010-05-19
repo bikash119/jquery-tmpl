@@ -82,36 +82,38 @@
 </script>
 
 <script>
-jQuery(function(){
-    var $ = jQuery,
-	   dataObject = {
-            name: function() {
-    			return this.firstName + " " + this.lastName;
-    		},
-            cityFilter:function(city){ return city.match('MA'); },
-            firstName: "John",
-    		lastName: "Resig",
-            url: "http://ejohn.org/",
-        	cities: [
-            	"Boston, MA",
-            	"San Francisco, CA"
-        	],
-            morecities: [
-                "Denver, CO",
-                "Washington, DC"
-            ],
-            thing:{},
-            cityMap:function(city){ 
-                switch(city.split(', ')[1]){
-                    case 'CO': return 'Colorado';
-                    case 'DC': return 'District of Columbia';
-                    default : return '???'
-                }
-            },
-            cityFormatter: function(i, city){
-                return i+") "+city.toUpperCase();
+jQuery(function($){
+    
+    $.tmpl.debug = true;
+    
+    var dataObject = {
+        name: function() {
+			return this.firstName + " " + this.lastName;
+		},
+        cityFilter:function(city){ return city.match('MA'); },
+        firstName: "John",
+		lastName: "Resig",
+        url: "http://ejohn.org/",
+    	cities: [
+        	"Boston, MA",
+        	"San Francisco, CA"
+    	],
+        morecities: [
+            "Denver, CO",
+            "Washington, DC"
+        ],
+        thing:{},
+        cityMap:function(city){ 
+            switch(city.split(', ')[1]){
+                case 'CO': return 'Colorado';
+                case 'DC': return 'District of Columbia';
+                default : return '???'
             }
-        };
+        },
+        cityFormatter: function(i, city){
+            return i+") "+city.toUpperCase();
+        }
+    };
     
     $.tmpl.filters.fn.extend({
         join: function(seperator){
@@ -133,10 +135,8 @@ jQuery(function(){
             return (name in this)?true:false;
         }
     });
-	
-    $.tmpl.debug = true;
     
-	jQuery('#tmpl-filters').render( dataObject ).appendTo("div");
+	$('#tmpl-filters').render( dataObject ).appendTo("div");
 
 });
 </script>

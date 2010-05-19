@@ -40,7 +40,10 @@
 
 
 <script>
-jQuery(function(){
+jQuery(function($){
+
+    $.tmpl.debug = true;
+    
 	var data = {
         name: function() {
 			return this.firstName + " " + this.lastName;
@@ -56,10 +59,10 @@ jQuery(function(){
             	"San Francisco, CA"
     	]
 	};
-	jQuery.tmpl.debug = true;
-	jQuery('#tmpl2').render( data ).appendTo("#target");
-    jQuery('#tmpl3').render( data ).appendTo("#target");
-    jQuery('#tmpl4').render( data ).appendTo("#target");
+    
+	$('#tmpl2').render( data ).appendTo("#target");
+    $('#tmpl3').render( data ).appendTo("#target");
+    $('#tmpl4').render( data ).appendTo("#target");
 
 });
 </script>

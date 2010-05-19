@@ -38,11 +38,13 @@
 
 
 <script>
-jQuery(function(){
+jQuery(function($){
+    
+    $.tmpl.debug = true;
+    
 	var dataObject = {};
 	
-    jQuery.tmpl.debug = true;
-	jQuery('#tmpl').render( dataObject ).appendTo("#main");
+	$('#tmpl').render( dataObject ).appendTo("#main");
 
 });
 </script>
