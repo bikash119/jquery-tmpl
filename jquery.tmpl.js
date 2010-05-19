@@ -110,9 +110,9 @@ jQuery.extend({
 		// in the user doesn't want it cached. They can stick it in
 		// jQuery.templates to cache it.
 		if ( jQuery.isArray( data ) ) {
-            return jQuery.map( data, function( data, i ) {
+			return jQuery.map( data, function( data, i ) {
 				return fn.call( data, jQuery, data, i );
-			}).join('');
+			});
 
 		} else {
 			return fn.call( data, jQuery, data, 0 );
@@ -169,7 +169,7 @@ function pushT(value, _this, encode){\n\
 }\n\
 \n\
 // Introduce the data as local variables using with(){} \n\
-with($.extend($data,_)){\n\
+with($.extend(true, {}, _, $data)){\n\
 try{\n\
     T.push('" +
 
@@ -183,14 +183,12 @@ try{\n\
                 if ( !tmpl ) {
                     throw "Template not found: " + type;
                 }
-
                 var def = tmpl._default||[];
-
                 var result = "');" + tmpl[slash ? "suffix" : "prefix"]
                     .split("$1").join(args || def[0])
                     .split("$2").join(fnargs || def[1]) + 
                     "\n        T.push('";
-                    
+                
                 return result;
             })
 + "');\n\
@@ -204,7 +202,8 @@ try{\n\
 }\n\
 //reset the tmpl.filter data object \n\
 _.data = null;\n\
-return T.join('\\n')";
+return T.join('')";
+        
         
         //provide some feedback if they are in tmpl.debug mode
         if (jQuery.tmpl.debug)
@@ -315,7 +314,7 @@ jQuery.tmpl.tags = {
         }else{"
 },
 
-// allows for html injection?
+// allows for html injection
 'html': {
     prefix: "\n\
         pushT($1, this, false);"
