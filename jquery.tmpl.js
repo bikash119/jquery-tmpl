@@ -114,7 +114,7 @@ jQuery.extend({
 		if ( jQuery.isArray( data ) ) {
 			return jQuery.map( data, function( data, i ) {
 				return fn.call( data, jQuery, data, i );
-			});
+			}).join('');
 
 		} else {
 			return fn.call( data, jQuery, data, 0 );
