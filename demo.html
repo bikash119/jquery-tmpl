@@ -1,20 +1,20 @@
-<script src="http://code.jquery.com/jquery.js"></script>
+<script src="lib/jquery.js"></script>
 <script src="jquery.tmpl.js"></script>
 <script>
 jQuery(function(){
 	var dataObject = {
-        	name: function() {
+        name: function() {
 			return this.firstName + " " + this.lastName;
 		},
     	firstName: "John",
 		lastName: "Resig",
-        	url: "http://ejohn.org/",
+        url: "http://ejohn.org/",
 		cityJoin: function() {
 			return this.cities.join(", ");
 		},
     	cities: [
-            	"Boston, MA",
-            	"San Francisco, CA"
+        	"Boston, MA",
+        	"San Francisco, CA"
     	]
 	};
 	
@@ -69,6 +69,9 @@ jQuery(function(){
         .render( dataObject ) // Returns a LI with all the data filled in
         .appendTo("ul");
     
+    //directly rendering with a data array returns array of rendered templates
+    var list = $.render('<li>${$i}) ${name} </li>', arrayOfDataObjects);
+    $(list).appendTo('ul');
 });
 </script>
 
@@ -86,7 +89,7 @@ jQuery(function(){
 </script>
 
 <script id="sometmpl3" type="text/html">
-    <li>Cities: ${ join(cities,"-") }</li>
+    <li>Cities: ${ join(cities," --- ") }</li>
 </script>
 
 <script id="sometmpl4" src='examples/templates/remote3.html' type="text/html"> </script>

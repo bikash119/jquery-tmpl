@@ -54,6 +54,9 @@ jQuery(function($){
     
 	$('#tmpl2').render( dataObject ).appendTo("div");
     
+    //partials are supported as well
+    $('#tmpl2').render( dataObject, ['hello']).appendTo("div");
+    
 });
 </script>
 

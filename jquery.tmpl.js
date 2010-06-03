@@ -18,16 +18,20 @@ var oldManip = jQuery.fn.domManip,
 
 jQuery.fn.extend({
 	render: function( data ) {
-		return this.map(function(i, tmpl){
+        var rendered = this.map(function(i, tmpl){
             
             // yuck but I cant get jquery to return text nodes that are part of a 
             // template that looks like ' this text doesnt show <p>just the paragraph</p>'
             // apparently because line 125 in jquery 1.4.2 uses match[1] to build the
             // fragment not match[0].  I'll have to see if this is my bug or theirs
+            rendered = jQuery.render( tmpl, data );
 			return  jQuery( 
-                jQuery('<div>'+ jQuery.render( tmpl, data ) +'</div>')[0].childNodes 
+                jQuery('<div>'+ 
+                    ( jQuery.isArray(rendered) ? rendered.join('') : rendered ) +
+                '</div>')[0].childNodes 
             ).get();
 		});
+        return rendered;
 	},
 	
 	// This will allow us to do: .append( "template", dataObject )
@@ -39,9 +43,10 @@ jQuery.fn.extend({
 		}
 
 		if ( args.length === 2 && typeof args[0] === "string" && typeof args[1] !== "string" ) {
-            arguments[0] = [ jQuery( 
-                jQuery('<div>'+ jQuery.render( args[0], args[1] )+'</div>')[0].childNodes 
-            ).get() ];
+            arguments[0] = jQuery.render( args[0], args[1] );
+            arguments[0] = jQuery.isArray(  arguments[0] ) ? 
+                [ arguments[0].join('') ] : 
+                [ arguments[0] ];
 		}
 		
 		return oldManip.apply( this, arguments );
@@ -49,9 +54,9 @@ jQuery.fn.extend({
 });
 
 jQuery.extend({
-    // note: render was changed to return a string not a jQuery object.
-    // while fn.render does return a jquery object
-	render: function( tmpl, data, asArray ) {
+    // note: render was changed to return a string or array of strings,
+    // not a jQuery object, while fn.render does return a jQuery object
+	render: function( tmpl, data ) {
         var fn, request;
 		
 		// Use a pre-defined template, if available
@@ -114,7 +119,7 @@ jQuery.extend({
 		if ( jQuery.isArray( data ) ) {
 			return jQuery.map( data, function( data, i ) {
 				return fn.call( data, jQuery, data, i );
-			}).join('');
+			});
 
 		} else {
 			return fn.call( data, jQuery, data, 0 );
