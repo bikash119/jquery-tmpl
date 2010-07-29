@@ -18,20 +18,19 @@ var oldManip = jQuery.fn.domManip,
 
 jQuery.fn.extend({
 	render: function( data ) {
-        var rendered = this.map(function(i, tmpl){
+		return this.map(function(i, tmpl){
             
             // yuck but I cant get jquery to return text nodes that are part of a 
             // template that looks like ' this text doesnt show <p>just the paragraph</p>'
             // apparently because line 125 in jquery 1.4.2 uses match[1] to build the
             // fragment not match[0].  I'll have to see if this is my bug or theirs
-            rendered = jQuery.render( tmpl, data );
+            var rendered = jQuery.render( tmpl, data );
 			return  jQuery( 
                 jQuery('<div>'+ 
                     ( jQuery.isArray(rendered) ? rendered.join('') : rendered ) +
                 '</div>')[0].childNodes 
             ).get();
 		});
-        return rendered;
 	},
 	
 	// This will allow us to do: .append( "template", dataObject )
@@ -54,9 +53,9 @@ jQuery.fn.extend({
 });
 
 jQuery.extend({
-    // note: render was changed to return a string or array of strings,
-    // not a jQuery object, while fn.render does return a jQuery object
-	render: function( tmpl, data ) {
+    // note: render was changed to return a string not a jQuery object.
+    // while fn.render does return a jquery object
+	render: function( tmpl, data, asArray ) {
         var fn, request;
 		
 		// Use a pre-defined template, if available
@@ -122,7 +121,7 @@ jQuery.extend({
 			});
 
 		} else {
-			return fn.call( data, jQuery, data, 0 );
+            return fn.call( data, jQuery, data, 0 );
 		}
 	},
 	
@@ -171,8 +170,8 @@ _.$i = T.index = $i||0; \n\
 T._ = null; //can be used for tmp variables\n\
 function pushT(value, _this, encode){\n\
     return encode === false ? \n\
-        T.push(typeof value ==='function'?value.call(_this):value) : \n\
-        T.push($.encode(typeof( value )==='function'?value.call(_this):value));\n\
+        T.push(typeof value ==='function'?value.call(_this):value.replace(/ \\$n /g, '\\n')) : \n\
+        T.push($.encode(typeof( value )==='function'?value.call(_this):value.replace(/ \\$n /g, '\\n')));\n\
 }\n\
 \n\
 // Introduce the data as local variables using with(){} \n\
@@ -182,7 +181,7 @@ try{\n\
 
         // Convert the template into pure JavaScript
         str .replace(/([\\'])/g, "\\$1")
-            .replace(/[\r\t\n]/g, " ")
+            .replace(/[\r\n]/g, " $n ")
             .replace(EXPRESSION, jQuery.tmpl.startTag+"= $1"+jQuery.tmpl.endTag)
             .replace(TAG, function(all, slash, type, fnargs, args) {
                 var tmpl = jQuery.tmpl.tags[ type ];
@@ -191,14 +190,14 @@ try{\n\
                     throw "Template not found: " + type;
                 }
                 var def = tmpl._default||[];
-                var result = "');" + tmpl[slash ? "suffix" : "prefix"]
+                var result = "'.replace('/ \\$n /g','\\n'));" + tmpl[slash ? "suffix" : "prefix"]
                     .split("$1").join(args || def[0])
                     .split("$2").join(fnargs || def[1]) + 
                     "\n        T.push('";
                 
                 return result;
-            })
-+ "');\n\
+            }).replace("/ \$n /g",'\n')
++ "'.replace(/ \\$n /g, '\\n'));\n\
 }catch(e){\n\
     if($.tmpl.debug){\n\
         T.push(' '+e+' ');\n\
@@ -209,7 +208,7 @@ try{\n\
 }\n\
 //reset the tmpl.filter data object \n\
 _.data = null;\n\
-return T.join('')";
+return T.join('').replace(/ \\$n /g, '\\n')";
         
         
         //provide some feedback if they are in tmpl.debug mode
