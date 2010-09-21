@@ -10,12 +10,12 @@
 </script>
 
 <script id="tmpl2" type="text/html">
-{{extend "#tmpl1"}}
+{{ extend "#tmpl1" }}
 <ul>
     <li>extend local template</li>
-    {{each(i,city) cities}}
-    <li> ${$i}) City: ${city}</li>
-    {{/each}}
+    {{ each(i,city) cities }}
+    <li> ${i}) City: ${city}</li>
+    {{ /each }}
 </ul>
 </script>
 
@@ -25,9 +25,9 @@
 {{extend "templates/base.html"}}
 <ul>
     <li>extend remote template</li>
-    {{each(i,city) cities}}
-    <li> ${$i}) City: ${city}</li>
-    {{/each}}
+    {{ each(i,city) cities }}
+    <li> ${i}) City: ${city}</li>
+    {{ /each }}
 </ul>
 </script>
 

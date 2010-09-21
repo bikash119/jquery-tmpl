@@ -10,6 +10,7 @@ var __arguments__,
 load('lib/env.rhino.js');
 
 //allow Env to load javascript
+Envjs.scriptTypes[''] = true;
 Envjs.scriptTypes['text/javascript'] = true;
 
 // our command hook up allows you to easily use your html interface

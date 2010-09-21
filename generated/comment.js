@@ -7,17 +7,17 @@
  
 jQuery.template["tmpl"]=
 function anonymous(jQuery, $data, $i) {
-    var $ = jQuery, T = [], _ = $.tmpl.filters;
+    var $ = jQuery, T = [], asArray = arguments.length > 3 ? arguments[3] : false, partial = arguments.length > 4 ? arguments[4] : false, _ = $.tmpl.filters;
     _.data = T.data = $data;
     _.$i = T.index = $i || 0;
     T._ = null;
     function pushT(value, _this, encode) {
         return encode === false ? T.push(typeof value === "function" ? value.call(_this) : value) : T.push($.encode(typeof (value) === "function" ? value.call(_this) : value));
     }
-    with ($.extend($data, _)) {
+    with ($.extend(true, {}, _, $data)) {
         try {
-            T.push("          <h2>you shouldn't see anything else</h2>     ");
-            T.push(" ");
+            T.push("\n    \n    <h2>you shouldn't see anything else</h2>\n    ");
+            T.push("\n");
         }
         catch (e) {
             if ($.tmpl.debug) {
@@ -28,5 +28,5 @@ function anonymous(jQuery, $data, $i) {
         }
     }
     _.data = null;
-    return T.join("\n");
+    return asArray ? T : T.join("");
 }
